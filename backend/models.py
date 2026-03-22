@@ -157,3 +157,57 @@ class ChatMessage(Base):
     content = Column(Text, nullable=False)
     lesson_id = Column(Integer, ForeignKey("lessons.id"), nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class Flashcard(Base):
+    __tablename__ = "flashcards"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    lesson_id = Column(Integer, ForeignKey("lessons.id"), nullable=True)
+    front = Column(Text, nullable=False)
+    back = Column(Text, nullable=False)
+    difficulty = Column(Integer, default=0)  # 0=new, 1=easy, 2=medium, 3=hard
+    interval = Column(Integer, default=0)  # days until next review
+    ease_factor = Column(Float, default=2.5)
+    next_review = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    review_count = Column(Integer, default=0)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class StudyPlan(Base):
+    __tablename__ = "study_plans"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    title = Column(String(200), nullable=False)
+    description = Column(Text, default="")
+    target_date = Column(DateTime, nullable=True)
+    completed = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    items = relationship("StudyPlanItem", back_populates="plan", cascade="all, delete-orphan")
+
+
+class StudyPlanItem(Base):
+    __tablename__ = "study_plan_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    plan_id = Column(Integer, ForeignKey("study_plans.id"), nullable=False)
+    title = Column(String(200), nullable=False)
+    completed = Column(Boolean, default=False)
+    order_index = Column(Integer, default=0)
+
+    plan = relationship("StudyPlan", back_populates="items")
+
+
+class FocusSession(Base):
+    __tablename__ = "focus_sessions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    duration_minutes = Column(Integer, nullable=False)
+    completed = Column(Boolean, default=False)
+    xp_earned = Column(Integer, default=0)
+    started_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    ended_at = Column(DateTime, nullable=True)

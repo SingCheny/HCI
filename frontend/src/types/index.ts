@@ -130,3 +130,41 @@ export interface ChatMessage {
   content: string;
   created_at?: string;
 }
+
+export interface Flashcard {
+  id: number;
+  lesson_id: number | null;
+  front: string;
+  back: string;
+  difficulty: number;
+  interval: number;
+  review_count: number;
+  next_review: string | null;
+  created_at: string | null;
+}
+
+export interface StudyPlanItem {
+  id: number;
+  title: string;
+  completed: boolean;
+  order_index: number;
+}
+
+export interface StudyPlan {
+  id: number;
+  title: string;
+  description: string;
+  target_date: string | null;
+  completed: boolean;
+  created_at: string | null;
+  items: StudyPlanItem[];
+}
+
+export interface FocusSession {
+  id: number;
+  duration_minutes: number;
+  completed: boolean;
+  xp_earned: number;
+  started_at: string | null;
+  ended_at: string | null;
+}

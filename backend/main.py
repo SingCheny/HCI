@@ -22,6 +22,7 @@ from models import (
     User, Course, Lesson, Quiz, QuizAttempt,
     UserProgress, Achievement, UserAchievement,
     StudySession, ChatMessage,
+    Flashcard, StudyPlan, StudyPlanItem, FocusSession,
 )
 from schemas import (
     UserCreate, UserLogin, UserResponse, TokenResponse,
@@ -29,6 +30,10 @@ from schemas import (
     QuizResponse, QuizSubmit, QuizResult,
     AchievementResponse, LeaderboardEntry, ComparisonStats,
     StudySessionCreate, ChatRequest, ChatResponse, AIToggle,
+    FlashcardCreate, FlashcardResponse, FlashcardReview,
+    StudyPlanCreate, StudyPlanResponse, StudyPlanItemResponse,
+    FocusSessionCreate, FocusSessionResponse,
+    WrongAnswerResponse,
 )
 from seed_data import COURSES, LESSONS, QUIZZES, ACHIEVEMENTS
 
@@ -106,11 +111,149 @@ def seed_database():
             email="demo@learnsmart.hci",
             hashed_password=hash_password("demo123"),
             display_name="Demo User",
-            level=1,
-            total_xp=0,
-            streak_days=0,
+            level=3,
+            total_xp=520,
+            streak_days=5,
         )
         db.add(demo_user)
+        db.flush()
+
+        # --- Seed demo study plans ---
+        plan1 = StudyPlan(
+            user_id=demo_user.id,
+            title="HCI Fundamentals Review",
+            description="Review all basic HCI concepts before midterm",
+            target_date=datetime.now(timezone.utc) + timedelta(days=7),
+        )
+        db.add(plan1)
+        db.flush()
+        for i, (t, done) in enumerate([
+            ("Read introduction to HCI", True),
+            ("Study Nielsen's heuristics", True),
+            ("Practice Gestalt principles quiz", True),
+            ("Review Fitts's Law examples", False),
+            ("Complete cognitive load worksheet", False),
+        ]):
+            db.add(StudyPlanItem(plan_id=plan1.id, title=t, completed=done, order_index=i))
+
+        plan2 = StudyPlan(
+            user_id=demo_user.id,
+            title="Accessibility Deep Dive",
+            description="Learn WCAG guidelines and assistive tech",
+            target_date=datetime.now(timezone.utc) + timedelta(days=14),
+        )
+        db.add(plan2)
+        db.flush()
+        for i, (t, done) in enumerate([
+            ("Read WCAG 2.1 overview", True),
+            ("Test color contrast tools", False),
+            ("Practice keyboard navigation", False),
+            ("Screen reader experiment", False),
+        ]):
+            db.add(StudyPlanItem(plan_id=plan2.id, title=t, completed=done, order_index=i))
+
+        plan3 = StudyPlan(
+            user_id=demo_user.id,
+            title="Usability Testing Methods",
+            description="Master think-aloud, A/B testing, and SUS",
+            target_date=datetime.now(timezone.utc) + timedelta(days=3),
+            completed=True,
+        )
+        db.add(plan3)
+        db.flush()
+        for i, (t, done) in enumerate([
+            ("Watch think-aloud demo video", True),
+            ("Read A/B testing case study", True),
+            ("Complete SUS questionnaire exercise", True),
+        ]):
+            db.add(StudyPlanItem(plan_id=plan3.id, title=t, completed=done, order_index=i))
+
+        # --- Seed demo quiz attempts (some wrong) ---
+        all_quizzes = db.query(Quiz).all()
+        import random
+        random.seed(42)
+        for q in all_quizzes[:12]:
+            is_correct = random.random() > 0.35
+            selected = q.correct_answer if is_correct else ((q.correct_answer + 1) % len(q.options))
+            attempt = QuizAttempt(
+                user_id=demo_user.id,
+                quiz_id=q.id,
+                selected_answer=selected,
+                is_correct=is_correct,
+                ai_assisted=random.choice([True, False]),
+                time_spent_seconds=round(random.uniform(8, 45), 1),
+                used_hint=random.choice([True, False]),
+                created_at=datetime.now(timezone.utc) - timedelta(days=random.randint(0, 6)),
+            )
+            db.add(attempt)
+
+        # --- Seed extra wrong answers for challenge demo ---
+        # Use quizzes NOT in the first 12 (which may have correct attempts)
+        # to guarantee pure wrong-only entries for demo
+        first_12_ids = {q.id for q in all_quizzes[:12]}
+        extra_wrong_quizzes = [q for q in all_quizzes if q.id not in first_12_ids]
+        for q in extra_wrong_quizzes[:8]:
+            wrong_sel = (q.correct_answer + 1) % len(q.options)
+            db.add(QuizAttempt(
+                user_id=demo_user.id,
+                quiz_id=q.id,
+                selected_answer=wrong_sel,
+                is_correct=False,
+                ai_assisted=random.choice([True, False]),
+                time_spent_seconds=round(random.uniform(5, 30), 1),
+                used_hint=False,
+                created_at=datetime.now(timezone.utc) - timedelta(days=random.randint(0, 5)),
+            ))
+
+        # --- Seed demo flashcards ---
+        first_lesson_id = list(lesson_map.values())[0] if lesson_map else None
+        for front, back in [
+            ("What is Fitts's Law?", "T = a + b × log₂(D/W + 1) — predicts movement time based on target distance and size."),
+            ("Name 3 Gestalt principles", "Proximity, Similarity, Closure, Continuity, Figure-Ground, Common Fate"),
+            ("What does WCAG stand for?", "Web Content Accessibility Guidelines"),
+            ("What is a heuristic evaluation?", "Expert review of an interface against usability heuristics (e.g. Nielsen's 10)"),
+        ]:
+            db.add(Flashcard(
+                user_id=demo_user.id,
+                lesson_id=first_lesson_id,
+                front=front,
+                back=back,
+                review_count=random.randint(0, 3),
+                difficulty=random.randint(0, 2),
+                next_review=datetime.now(timezone.utc) + timedelta(days=random.randint(0, 3)),
+            ))
+
+        # --- Seed demo focus sessions (spread across the week) ---
+        focus_data = [
+            (25, 25, 0),   # today
+            (45, 45, 1),   # yesterday
+            (15, 15, 1),   # yesterday
+            (25, 25, 2),   # 2 days ago
+            (60, 60, 3),   # 3 days ago
+            (25, 25, 5),   # 5 days ago
+        ]
+        for mins, xp, days_ago in focus_data:
+            base_time = datetime.now(timezone.utc) - timedelta(days=days_ago)
+            db.add(FocusSession(
+                user_id=demo_user.id,
+                duration_minutes=mins,
+                completed=True,
+                xp_earned=xp,
+                started_at=base_time - timedelta(minutes=mins + 5),
+                ended_at=base_time,
+            ))
+
+        # --- Seed demo lesson progress ---
+        lesson_ids_list = list(lesson_map.values())
+        for lid in lesson_ids_list[:3]:
+            db.add(UserProgress(
+                user_id=demo_user.id,
+                lesson_id=lid,
+                completed=True,
+                score=100,
+                ai_assisted=True,
+                completed_at=datetime.now(timezone.utc) - timedelta(days=random.randint(1, 5)),
+            ))
 
         db.commit()
         print("Database seeded successfully!")
@@ -945,6 +1088,538 @@ def generate_ai_response(message: str, lesson_context: str, db: Session) -> str:
         "- \"How do Nielsen's heuristics work?\"\n\n"
         "I'm here to support your learning journey! 📚"
     )
+
+
+# ===========================================================
+#  FLASHCARDS
+# ===========================================================
+
+@app.get("/api/flashcards", response_model=List[FlashcardResponse])
+def get_flashcards(
+    lesson_id: Optional[int] = None,
+    due_only: bool = False,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    query = db.query(Flashcard).filter(Flashcard.user_id == user.id)
+    if lesson_id:
+        query = query.filter(Flashcard.lesson_id == lesson_id)
+    if due_only:
+        query = query.filter(Flashcard.next_review <= datetime.now(timezone.utc))
+    return query.order_by(Flashcard.next_review).all()
+
+
+@app.post("/api/flashcards", response_model=FlashcardResponse)
+def create_flashcard(
+    data: FlashcardCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    card = Flashcard(
+        user_id=user.id,
+        lesson_id=data.lesson_id,
+        front=data.front,
+        back=data.back,
+    )
+    db.add(card)
+    db.commit()
+    db.refresh(card)
+    return card
+
+
+@app.post("/api/flashcards/{card_id}/review")
+def review_flashcard(
+    card_id: int,
+    data: FlashcardReview,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    card = db.query(Flashcard).filter(Flashcard.id == card_id, Flashcard.user_id == user.id).first()
+    if not card:
+        raise HTTPException(status_code=404, detail="Flashcard not found")
+
+    q = max(0, min(3, data.quality))
+    card.review_count += 1
+
+    if q == 0:  # again
+        card.interval = 0
+        card.ease_factor = max(1.3, card.ease_factor - 0.2)
+    elif q == 1:  # hard
+        card.interval = max(1, int(card.interval * 1.2))
+        card.ease_factor = max(1.3, card.ease_factor - 0.15)
+    elif q == 2:  # good
+        card.interval = max(1, int(card.interval * card.ease_factor)) if card.interval > 0 else 1
+    else:  # easy
+        card.interval = max(1, int(card.interval * card.ease_factor * 1.3)) if card.interval > 0 else 3
+        card.ease_factor += 0.15
+
+    card.difficulty = q
+    card.next_review = datetime.now(timezone.utc) + timedelta(days=card.interval)
+    db.commit()
+
+    xp = [0, 3, 5, 8][q]
+    if xp > 0:
+        user.total_xp += xp
+        db.commit()
+
+    return {"status": "ok", "next_review": card.next_review.isoformat(), "interval": card.interval, "xp_earned": xp}
+
+
+@app.delete("/api/flashcards/{card_id}")
+def delete_flashcard(
+    card_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    card = db.query(Flashcard).filter(Flashcard.id == card_id, Flashcard.user_id == user.id).first()
+    if not card:
+        raise HTTPException(status_code=404, detail="Flashcard not found")
+    db.delete(card)
+    db.commit()
+    return {"status": "ok"}
+
+
+@app.post("/api/flashcards/generate")
+def generate_flashcards_for_lesson(
+    lesson_id: int = Query(...),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Auto-generate flashcards from a lesson's quiz questions."""
+    lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
+    if not lesson:
+        raise HTTPException(status_code=404, detail="Lesson not found")
+
+    quizzes = db.query(Quiz).filter(Quiz.lesson_id == lesson_id).all()
+    created = 0
+    for quiz in quizzes:
+        existing = db.query(Flashcard).filter(
+            Flashcard.user_id == user.id,
+            Flashcard.front == quiz.question,
+        ).first()
+        if existing:
+            continue
+        correct_text = quiz.options[quiz.correct_answer] if quiz.correct_answer < len(quiz.options) else ""
+        card = Flashcard(
+            user_id=user.id,
+            lesson_id=lesson_id,
+            front=quiz.question,
+            back=f"{correct_text}\n\n{quiz.explanation}" if quiz.explanation else correct_text,
+        )
+        db.add(card)
+        created += 1
+
+    db.commit()
+    return {"status": "ok", "created": created}
+
+
+# ===========================================================
+#  STUDY PLANS
+# ===========================================================
+
+@app.get("/api/study-plans", response_model=List[StudyPlanResponse])
+def get_study_plans(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    plans = db.query(StudyPlan).filter(StudyPlan.user_id == user.id).order_by(StudyPlan.created_at.desc()).all()
+    return plans
+
+
+@app.post("/api/study-plans", response_model=StudyPlanResponse)
+def create_study_plan(
+    data: StudyPlanCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    plan = StudyPlan(
+        user_id=user.id,
+        title=data.title,
+        description=data.description,
+        target_date=data.target_date,
+    )
+    db.add(plan)
+    db.flush()
+    for i, item in enumerate(data.items):
+        db.add(StudyPlanItem(plan_id=plan.id, title=item.title, completed=item.completed, order_index=i))
+    db.commit()
+    db.refresh(plan)
+    return plan
+
+
+@app.put("/api/study-plans/{plan_id}", response_model=StudyPlanResponse)
+def update_study_plan(
+    plan_id: int,
+    data: StudyPlanCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    plan = db.query(StudyPlan).filter(StudyPlan.id == plan_id, StudyPlan.user_id == user.id).first()
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    plan.title = data.title
+    plan.description = data.description
+    plan.target_date = data.target_date
+    # Replace items
+    db.query(StudyPlanItem).filter(StudyPlanItem.plan_id == plan.id).delete()
+    for i, item in enumerate(data.items):
+        db.add(StudyPlanItem(plan_id=plan.id, title=item.title, completed=item.completed, order_index=i))
+    plan.completed = all(item.completed for item in data.items) if data.items else False
+    db.commit()
+    db.refresh(plan)
+    return plan
+
+
+@app.delete("/api/study-plans/{plan_id}")
+def delete_study_plan(
+    plan_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    plan = db.query(StudyPlan).filter(StudyPlan.id == plan_id, StudyPlan.user_id == user.id).first()
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    db.delete(plan)
+    db.commit()
+    return {"status": "ok"}
+
+
+@app.patch("/api/study-plans/{plan_id}/items/{item_id}")
+def toggle_plan_item(
+    plan_id: int,
+    item_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    plan = db.query(StudyPlan).filter(StudyPlan.id == plan_id, StudyPlan.user_id == user.id).first()
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    item = db.query(StudyPlanItem).filter(StudyPlanItem.id == item_id, StudyPlanItem.plan_id == plan.id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    item.completed = not item.completed
+    plan.completed = all(i.completed for i in plan.items)
+    db.commit()
+    return {"status": "ok", "completed": item.completed, "plan_completed": plan.completed}
+
+
+# ===========================================================
+#  FOCUS TIMER
+# ===========================================================
+
+@app.get("/api/focus-sessions", response_model=List[FocusSessionResponse])
+def get_focus_sessions(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    sessions = (
+        db.query(FocusSession)
+        .filter(FocusSession.user_id == user.id)
+        .order_by(FocusSession.started_at.desc())
+        .limit(20)
+        .all()
+    )
+    return sessions
+
+
+@app.post("/api/focus-sessions", response_model=FocusSessionResponse)
+def start_focus_session(
+    data: FocusSessionCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    session = FocusSession(
+        user_id=user.id,
+        duration_minutes=data.duration_minutes,
+    )
+    db.add(session)
+    db.commit()
+    db.refresh(session)
+    return session
+
+
+@app.post("/api/focus-sessions/{session_id}/complete", response_model=FocusSessionResponse)
+def complete_focus_session(
+    session_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    session = db.query(FocusSession).filter(
+        FocusSession.id == session_id, FocusSession.user_id == user.id
+    ).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    if session.completed:
+        return session
+
+    session.completed = True
+    session.ended_at = datetime.now(timezone.utc)
+    xp = max(5, session.duration_minutes // 5 * 5)
+    session.xp_earned = xp
+    user.total_xp += xp
+
+    new_level = 1
+    while xp_for_level(new_level + 1) <= user.total_xp:
+        new_level += 1
+    user.level = new_level
+
+    db.commit()
+    db.refresh(session)
+    return session
+
+
+@app.get("/api/focus-sessions/stats")
+def get_focus_stats(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    sessions = db.query(FocusSession).filter(
+        FocusSession.user_id == user.id, FocusSession.completed == True
+    ).all()
+    total_minutes = sum(s.duration_minutes for s in sessions)
+    total_sessions = len(sessions)
+    total_xp = sum(s.xp_earned for s in sessions)
+    today = datetime.now(timezone.utc).date()
+    today_minutes = sum(s.duration_minutes for s in sessions if s.ended_at and s.ended_at.date() == today)
+
+    # --- Weekly data (last 7 days) ---
+    weekly_data = []
+    for i in range(6, -1, -1):
+        day = today - timedelta(days=i)
+        day_sessions = [s for s in sessions if s.ended_at and s.ended_at.date() == day]
+        weekly_data.append({
+            "date": day.isoformat(),
+            "weekday": day.strftime("%a"),
+            "minutes": sum(s.duration_minutes for s in day_sessions),
+            "sessions": len(day_sessions),
+        })
+
+    # --- Average duration per session ---
+    avg_duration = round(total_minutes / max(total_sessions, 1), 1)
+
+    # --- Focus streak (consecutive days with at least one session) ---
+    session_dates = sorted(set(s.ended_at.date() for s in sessions if s.ended_at), reverse=True)
+    focus_streak = 0
+    check_date = today
+    for d in session_dates:
+        if d == check_date:
+            focus_streak += 1
+            check_date -= timedelta(days=1)
+        elif d < check_date:
+            break
+
+    # --- Duration distribution ---
+    dist = {"15": 0, "25": 0, "45": 0, "60": 0, "other": 0}
+    for s in sessions:
+        key = str(s.duration_minutes)
+        if key in dist:
+            dist[key] += 1
+        else:
+            dist["other"] += 1
+
+    # --- Weekly total ---
+    week_start = today - timedelta(days=today.weekday())
+    week_minutes = sum(s.duration_minutes for s in sessions if s.ended_at and s.ended_at.date() >= week_start)
+
+    return {
+        "total_minutes": total_minutes,
+        "total_sessions": total_sessions,
+        "total_xp": total_xp,
+        "today_minutes": today_minutes,
+        "weekly_data": weekly_data,
+        "avg_duration": avg_duration,
+        "focus_streak": focus_streak,
+        "distribution": dist,
+        "week_minutes": week_minutes,
+    }
+
+
+# ===========================================================
+#  WRONG ANSWERS COLLECTION
+# ===========================================================
+
+@app.get("/api/wrong-answers", response_model=List[WrongAnswerResponse])
+def get_wrong_answers(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Get all incorrectly answered quiz questions."""
+    attempts = (
+        db.query(QuizAttempt)
+        .filter(QuizAttempt.user_id == user.id, QuizAttempt.is_correct == False)
+        .order_by(QuizAttempt.created_at.desc())
+        .all()
+    )
+    result = []
+    seen_quiz_ids = set()
+    for a in attempts:
+        if a.quiz_id in seen_quiz_ids:
+            continue
+        seen_quiz_ids.add(a.quiz_id)
+        quiz = db.query(Quiz).filter(Quiz.id == a.quiz_id).first()
+        if not quiz:
+            continue
+        lesson = db.query(Lesson).filter(Lesson.id == quiz.lesson_id).first()
+        result.append(WrongAnswerResponse(
+            attempt_id=a.id,
+            quiz_id=quiz.id,
+            question=quiz.question,
+            options=quiz.options,
+            selected_answer=a.selected_answer,
+            correct_answer=quiz.correct_answer,
+            explanation=quiz.explanation or "",
+            lesson_id=quiz.lesson_id,
+            lesson_title=lesson.title if lesson else "",
+            ai_assisted=a.ai_assisted,
+            created_at=a.created_at,
+        ))
+    return result
+
+
+@app.post("/api/wrong-answers/{quiz_id}/retry")
+def retry_wrong_answer(
+    quiz_id: int,
+    data: QuizSubmit,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Re-attempt a previously wrong quiz question."""
+    quiz = db.query(Quiz).filter(Quiz.id == quiz_id).first()
+    if not quiz:
+        raise HTTPException(404, "Quiz not found")
+    is_correct = data.selected_answer == quiz.correct_answer
+    attempt = QuizAttempt(
+        user_id=user.id,
+        quiz_id=quiz.id,
+        selected_answer=data.selected_answer,
+        is_correct=is_correct,
+        ai_assisted=user.ai_mode_enabled,
+        time_spent_seconds=data.time_spent_seconds,
+        used_hint=data.used_hint,
+    )
+    db.add(attempt)
+    xp_earned = 0
+    if is_correct:
+        xp_earned = max(5, quiz.xp_reward // 2)
+        user.total_xp += xp_earned
+        user.level = level_from_xp(user.total_xp)
+    db.commit()
+    return {
+        "is_correct": is_correct,
+        "correct_answer": quiz.correct_answer,
+        "explanation": quiz.explanation,
+        "xp_earned": xp_earned,
+    }
+
+
+# ===========================================================
+#  DASHBOARD WIDGETS
+# ===========================================================
+
+@app.get("/api/dashboard/widgets")
+def get_dashboard_widgets(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Aggregate widget data for the dashboard."""
+    # -- Flashcard stats --
+    total_cards = db.query(Flashcard).filter(Flashcard.user_id == user.id).count()
+    due_cards = db.query(Flashcard).filter(
+        Flashcard.user_id == user.id,
+        Flashcard.next_review <= datetime.now(timezone.utc),
+    ).count()
+    mastered_cards = db.query(Flashcard).filter(
+        Flashcard.user_id == user.id, Flashcard.difficulty >= 2, Flashcard.review_count >= 2,
+    ).count()
+
+    # -- Wrong answer stats --
+    wrong_count = db.query(QuizAttempt).filter(
+        QuizAttempt.user_id == user.id, QuizAttempt.is_correct == False,
+    ).count()
+    total_attempts = db.query(QuizAttempt).filter(QuizAttempt.user_id == user.id).count()
+    # Count how many wrong questions were later answered correctly
+    wrong_quiz_ids = [
+        r[0] for r in db.query(QuizAttempt.quiz_id).filter(
+            QuizAttempt.user_id == user.id, QuizAttempt.is_correct == False,
+        ).distinct().all()
+    ]
+    corrected = 0
+    for qid in wrong_quiz_ids:
+        later_correct = db.query(QuizAttempt).filter(
+            QuizAttempt.user_id == user.id,
+            QuizAttempt.quiz_id == qid,
+            QuizAttempt.is_correct == True,
+        ).first()
+        if later_correct:
+            corrected += 1
+
+    # -- Study plan stats --
+    plans = db.query(StudyPlan).filter(StudyPlan.user_id == user.id).all()
+    total_plans = len(plans)
+    completed_plans = sum(1 for p in plans if p.completed)
+    all_items = []
+    for p in plans:
+        all_items.extend(p.items)
+    total_items = len(all_items)
+    done_items = sum(1 for i in all_items if i.completed)
+    plan_summaries = []
+    for p in plans:
+        if p.completed:
+            continue
+        p_total = len(p.items)
+        p_done = sum(1 for i in p.items if i.completed)
+        plan_summaries.append({
+            "id": p.id,
+            "title": p.title,
+            "progress": round(p_done / max(p_total, 1) * 100),
+            "done": p_done,
+            "total": p_total,
+        })
+
+    # -- Focus session stats --
+    focus_sessions = db.query(FocusSession).filter(
+        FocusSession.user_id == user.id, FocusSession.completed == True
+    ).all()
+    focus_total = sum(s.duration_minutes for s in focus_sessions)
+    focus_count = len(focus_sessions)
+    focus_xp = sum(s.xp_earned for s in focus_sessions)
+    today = datetime.now(timezone.utc).date()
+    focus_today = sum(s.duration_minutes for s in focus_sessions if s.ended_at and s.ended_at.date() == today)
+    focus_weekly = []
+    for i in range(6, -1, -1):
+        day = today - timedelta(days=i)
+        day_mins = sum(s.duration_minutes for s in focus_sessions if s.ended_at and s.ended_at.date() == day)
+        focus_weekly.append({"weekday": day.strftime("%a"), "minutes": day_mins})
+    focus_avg = round(focus_total / max(focus_count, 1), 1)
+
+    return {
+        "flashcards": {
+            "total": total_cards,
+            "due": due_cards,
+            "mastered": mastered_cards,
+        },
+        "wrong_answers": {
+            "total_wrong": len(wrong_quiz_ids),
+            "corrected": corrected,
+            "uncorrected": len(wrong_quiz_ids) - corrected,
+            "total_attempts": total_attempts,
+        },
+        "study_plans": {
+            "total_plans": total_plans,
+            "completed_plans": completed_plans,
+            "total_items": total_items,
+            "done_items": done_items,
+            "active_plans": plan_summaries[:3],
+        },
+        "focus": {
+            "total_minutes": focus_total,
+            "total_sessions": focus_count,
+            "total_xp": focus_xp,
+            "today_minutes": focus_today,
+            "avg_duration": focus_avg,
+            "weekly": focus_weekly,
+        },
+    }
 
 
 # ===========================================================

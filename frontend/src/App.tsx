@@ -9,6 +9,10 @@ import LessonPage from './pages/LessonPage';
 import AchievementsPage from './pages/AchievementsPage';
 import ComparisonPage from './pages/ComparisonPage';
 import ChatPage from './pages/ChatPage';
+import FlashcardsPage from './pages/FlashcardsPage';
+import StudyPlanPage from './pages/StudyPlanPage';
+import FocusTimerPage from './pages/FocusTimerPage';
+import WrongAnswersPage from './pages/WrongAnswersPage';
 import { Toaster } from './components/Toast';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -50,6 +54,10 @@ export default function App() {
                     <Route path="/achievements" element={<AchievementsPage />} />
                     <Route path="/comparison" element={<ComparisonPage />} />
                     <Route path="/chat" element={<ChatPage />} />
+                    <Route path="/flashcards" element={<FlashcardsPage />} />
+                    <Route path="/study-plan" element={<StudyPlanPage />} />
+                    <Route path="/focus" element={<FocusTimerPage />} />
+                    <Route path="/wrong-answers" element={<WrongAnswersPage />} />
                   </Routes>
                 </Layout>
               </ProtectedRoute>

@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import {
   LayoutDashboard, BookOpen, Trophy, BarChart3,
   MessageSquare, LogOut, ChevronLeft, ChevronRight,
-  Sparkles, Zap, Flame, Globe,
+  Sparkles, Zap, Flame, Globe, Layers, CalendarDays, Timer, AlertCircle,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useI18n } from '../i18n';
@@ -18,6 +18,10 @@ const navItems: { path: string; icon: typeof LayoutDashboard; labelKey: Translat
   { path: '/achievements', icon: Trophy, labelKey: 'navAchievements' },
   { path: '/comparison', icon: BarChart3, labelKey: 'navComparison' },
   { path: '/chat', icon: MessageSquare, labelKey: 'navChat' },
+  { path: '/flashcards', icon: Layers, labelKey: 'navFlashcards' },
+  { path: '/study-plan', icon: CalendarDays, labelKey: 'navStudyPlan' },
+  { path: '/focus', icon: Timer, labelKey: 'navFocus' },
+  { path: '/wrong-answers', icon: AlertCircle, labelKey: 'navWrongAnswers' },
 ];
 
 export default function Layout({ children }: { children: ReactNode }) {

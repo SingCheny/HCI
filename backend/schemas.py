@@ -162,3 +162,101 @@ class ChatResponse(BaseModel):
 # ---- Settings ----
 class AIToggle(BaseModel):
     enabled: bool
+
+
+# ---- Flashcards ----
+class FlashcardCreate(BaseModel):
+    lesson_id: Optional[int] = None
+    front: str
+    back: str
+
+
+class FlashcardResponse(BaseModel):
+    id: int
+    lesson_id: Optional[int] = None
+    front: str
+    back: str
+    difficulty: int
+    interval: int
+    review_count: int
+    next_review: Optional[datetime] = None
+    created_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class FlashcardReview(BaseModel):
+    quality: int  # 0=again, 1=hard, 2=good, 3=easy
+
+
+# ---- Study Plan ----
+class StudyPlanItemCreate(BaseModel):
+    title: str
+    completed: bool = False
+
+
+class StudyPlanCreate(BaseModel):
+    title: str
+    description: str = ""
+    target_date: Optional[datetime] = None
+    items: List[StudyPlanItemCreate] = []
+
+
+class StudyPlanItemResponse(BaseModel):
+    id: int
+    title: str
+    completed: bool
+    order_index: int
+
+    class Config:
+        from_attributes = True
+
+
+class StudyPlanResponse(BaseModel):
+    id: int
+    title: str
+    description: str
+    target_date: Optional[datetime] = None
+    completed: bool
+    created_at: Optional[datetime] = None
+    items: List[StudyPlanItemResponse] = []
+
+    class Config:
+        from_attributes = True
+
+
+# ---- Focus Timer ----
+class FocusSessionCreate(BaseModel):
+    duration_minutes: int
+
+
+class FocusSessionComplete(BaseModel):
+    pass
+
+
+class FocusSessionResponse(BaseModel):
+    id: int
+    duration_minutes: int
+    completed: bool
+    xp_earned: int
+    started_at: Optional[datetime] = None
+    ended_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+# ---- Wrong Answers ----
+class WrongAnswerResponse(BaseModel):
+    attempt_id: int
+    quiz_id: int
+    question: str
+    options: list
+    selected_answer: int
+    correct_answer: int
+    explanation: str
+    lesson_id: int
+    lesson_title: str
+    ai_assisted: bool
+    created_at: Optional[datetime] = None
