@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-300: #a5b4fc;
+  --color-primary-400: #818cf8;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+  --color-accent-400: #f472b6;
+  --color-accent-500: #ec4899;
+  --color-accent-600: #db2777;
+  --color-success-400: #34d399;
+  --color-success-500: #10b981;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-danger-400: #f87171;
+  --color-danger-500: #ef4444;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #0f0c29 0%, #1a1145 40%, #24243e 100%);
+  min-height: 100vh;
+  color: #e2e8f0;
+  overflow-x: hidden;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.5); }
+
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #818cf8, #ec4899, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glow-primary { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3), 0 0 40px rgba(99, 102, 241, 0.1); }
+.glow-success { box-shadow: 0 0 20px rgba(16, 185, 129, 0.3), 0 0 40px rgba(16, 185, 129, 0.1); }
+.glow-accent { box-shadow: 0 0 20px rgba(236, 72, 153, 0.3), 0 0 40px rgba(236, 72, 153, 0.1); }
+
+@keyframes float {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes achievement-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+  50% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(245, 158, 11, 0); }
+}
+.achievement-new { animation: achievement-pulse 2s ease-in-out 3; }
+
+@keyframes xp-fill { from { width: 0%; } }
+.xp-bar-animated { animation: xp-fill 1s ease-out; }
+
+.card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+
+.lesson-content h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem; color: #a5b4fc; }
+.lesson-content h2 { font-size: 1.35rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #c4b5fd; }
+.lesson-content h3 { font-size: 1.1rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #a5b4fc; }
+.lesson-content p { margin-bottom: 0.75rem; line-height: 1.7; color: #cbd5e1; }
+.lesson-content strong { color: #e2e8f0; font-weight: 600; }
+.lesson-content ul, .lesson-content ol { margin-bottom: 0.75rem; padding-left: 1.5rem; }
+.lesson-content li { margin-bottom: 0.35rem; line-height: 1.6; color: #cbd5e1; }
+.lesson-content blockquote { border-left: 3px solid #6366f1; padding: 0.75rem 1rem; margin: 1rem 0; background: rgba(99,102,241,0.1); border-radius: 0 8px 8px 0; font-style: italic; color: #a5b4fc; }
+
+@keyframes slide-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.toast-enter { animation: slide-in 0.3s ease-out; }
+
+.quiz-option { transition: all 0.2s ease; }
+.quiz-option:hover { transform: translateX(4px); background: rgba(99,102,241,0.15); }
+.quiz-option.correct { background: rgba(16,185,129,0.2) !important; border-color: #10b981 !important; }
+.quiz-option.incorrect { background: rgba(239,68,68,0.2) !important; border-color: #ef4444 !important; }
+
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+.spinner { animation: spin-slow 1s linear infinite; }
