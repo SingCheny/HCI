@@ -767,6 +767,16 @@ def get_chat_history(
     ]
 
 
+@app.delete("/api/chat/history")
+def clear_chat_history(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    db.query(ChatMessage).filter(ChatMessage.user_id == user.id).delete()
+    db.commit()
+    return {"status": "ok"}
+
+
 def generate_ai_response(message: str, lesson_context: str, db: Session) -> str:
     """Generate contextual AI responses for demo purposes."""
     msg_lower = message.lower().strip()
@@ -944,6 +954,29 @@ def generate_ai_response(message: str, lesson_context: str, db: Session) -> str:
 @app.get("/api/health")
 def health():
     return {"status": "ok", "service": "LearnSmart API"}
+
+
+# ===========================================================
+#  SERVE FRONTEND STATIC FILES (for production / ngrok)
+# ===========================================================
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+_frontend_dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+
+if _frontend_dist.is_dir():
+    # Serve static assets (JS, CSS, images)
+    app.mount("/assets", StaticFiles(directory=str(_frontend_dist / "assets")), name="static-assets")
+
+    # Serve other static files in dist root (favicon, etc.)
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        """Serve the SPA – return the requested file if it exists, otherwise index.html."""
+        file_path = _frontend_dist / full_path
+        if full_path and file_path.is_file():
+            return FileResponse(str(file_path))
+        return FileResponse(str(_frontend_dist / "index.html"))
 
 
 if __name__ == "__main__":

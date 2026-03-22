@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, Send, User, Sparkles, BookOpen, Loader2 } from 'lucide-react';
+import { Bot, Send, User, Sparkles, BookOpen, Loader2, Trash2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import api from '../services/api';
 import { useI18n } from '../i18n';
@@ -53,6 +53,15 @@ export default function ChatPage() {
     }
   };
 
+  const handleClear = async () => {
+    try {
+      await api.delete('/chat/history');
+      setMessages([]);
+    } catch {
+      // ignore
+    }
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] max-w-3xl mx-auto">
       {/* Header */}
@@ -67,6 +76,16 @@ export default function ChatPage() {
 
         {/* Lesson Selector */}
         <div className="flex items-center gap-2">
+          {messages.length > 0 && (
+            <button
+              onClick={handleClear}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-gray-400 hover:text-red-400 hover:bg-red-500/10 border border-white/10 transition-all"
+              title={t('chatClear')}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              {t('chatClear')}
+            </button>
+          )}
           <BookOpen className="w-4 h-4 text-gray-400" />
           <select
             value={lessonId ?? ''}

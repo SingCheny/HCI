@@ -257,6 +257,50 @@ npm run dev
 
 ---
 
+## 🌐 外网部署（ngrok）
+
+如需让不在同一局域网的成员访问：
+
+### 1. 安装 ngrok
+
+从 https://ngrok.com/download 下载并解压。
+
+### 2. 认证 ngrok
+
+注册账号后获取 authtoken，执行：
+
+```bash
+ngrok config add-authtoken <your-token>
+```
+
+### 3. 构建前端
+
+```bash
+cd frontend
+npx vite build
+```
+
+### 4. 启动后端
+
+后端会自动 serve 前端打包产物（`frontend/dist`）：
+
+```bash
+cd backend
+python -m uvicorn main:app --host 0.0.0.0 --port 8000
+```
+
+### 5. 启动 ngrok 隧道
+
+```bash
+ngrok http 8000
+```
+
+ngrok 会输出一个公网 URL（如 `https://xxx.ngrok-free.dev`），分享给组员即可访问。
+
+> **注意**：免费版每次重启 URL 会变；不要关闭运行 ngrok 和后端的终端窗口。
+
+---
+
 ## 📖 使用指南
 
 ### 登录 / 注册
@@ -422,11 +466,12 @@ Course ──1:N──▶ Lesson ──1:N──▶ Quiz
 
 ### AI 辅导接口
 
-| 方法   | 路径                                      | 说明        | 请求体                       |
-| ---- | --------------------------------------- | --------- | ------------------------- |
-| POST | `/api/chat` | 向 AI 发送消息 | `{ message, lesson_id? }` |
-| GET  | `/api/chat/history`                     | 获取聊天历史    | 查询参数 `lesson_id`          |
-| POST | `/api/settings/ai-mode`                 | 切换 AI 模式  | `{ enabled }`             |
+| 方法     | 路径                                      | 说明        | 请求体                       |
+| ------ | --------------------------------------- | --------- | ------------------------- |
+| POST   | `/api/chat` | 向 AI 发送消息 | `{ message, lesson_id? }` |
+| GET    | `/api/chat/history`                     | 获取聊天历史    | 查询参数 `lesson_id`          |
+| DELETE | `/api/chat/history`                     | 清除聊天历史    | —                         |
+| POST   | `/api/settings/ai-mode`                 | 切换 AI 模式  | `{ enabled }`             |
 
 ### 认证方式
 
@@ -494,7 +539,8 @@ GET /api/courses?token=<access_token>
 - 聊天消息列表（用户 / AI 气泡）
 - 课程上下文选择器
 - 预设快捷问题按钮
-- 发送中加载动画
+- 发送中加载动画（旋转图标 + 跳动圆点）
+- 清除对话历史按钮
 - 空状态引导
 
 ---

@@ -126,6 +126,7 @@ export const translations = {
   chatEmptySub: { en: 'Try asking about HCI principles, design patterns, or usability!', zh: '试试询问HCI原则、设计模式或可用性相关问题！' },
   chatPlaceholder: { en: 'Ask the AI tutor...', zh: '向AI导师提问...' },
   chatThinking: { en: 'Thinking...', zh: '思考中...' },
+  chatClear: { en: 'Clear Chat', zh: '清除对话' },
   chatSuggestion1: { en: 'What is HCI?', zh: '什么是人机交互？' },
   chatSuggestion2: { en: "Explain Fitts' Law", zh: '解释费茨定律' },
   chatSuggestion3: { en: 'What are heuristic evaluations?', zh: '什么是启发式评估？' },
