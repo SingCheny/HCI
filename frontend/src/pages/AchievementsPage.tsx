@@ -1,36 +1,43 @@
 import { useState, useEffect } from 'react';
+import type { ComponentType } from 'react';
 import { motion } from 'framer-motion';
-import { Award, Lock, Star, Zap, Calendar } from 'lucide-react';
+import {
+  TrophyOutlined,
+  LockOutlined,
+  StarOutlined,
+  ThunderboltOutlined,
+  CalendarOutlined,
+  ReadOutlined,
+  CrownOutlined,
+  CheckCircleOutlined,
+  AimOutlined,
+  FireOutlined,
+  ExperimentOutlined,
+  SafetyOutlined,
+  ClockCircleOutlined,
+} from '@ant-design/icons';
+import { Card, Progress, Tag, Typography, Row, Col, Avatar, Space, Spin, Badge } from 'antd';
 import api from '../services/api';
 import { useI18n } from '../i18n';
 import type { Achievement } from '../types';
 
-const badgeColors: Record<string, string> = {
-  gold: 'from-yellow-400 to-amber-500',
-  silver: 'from-gray-300 to-gray-400',
-  bronze: 'from-orange-400 to-orange-600',
-  purple: 'from-purple-400 to-purple-600',
-  blue: 'from-blue-400 to-blue-600',
-  green: 'from-green-400 to-emerald-500',
-  red: 'from-red-400 to-red-600',
-  pink: 'from-pink-400 to-pink-600',
-};
+const { Title, Text } = Typography;
 
-const iconEmoji: Record<string, string> = {
-  'footprints': '👣',
-  'book-open': '📖',
-  'graduation-cap': '🎓',
-  'crown': '👑',
-  'check-circle': '✅',
-  'target': '🎯',
-  'star': '⭐',
-  'flame': '🔥',
-  'zap': '⚡',
-  'trophy': '🏆',
-  'sparkles': '✨',
-  'brain': '🧠',
-  'shield': '🛡️',
-  'clock': '⏰',
+const iconMap: Record<string, ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
+  'footprints': StarOutlined,
+  'book-open': ReadOutlined,
+  'graduation-cap': CrownOutlined,
+  'crown': CrownOutlined,
+  'check-circle': CheckCircleOutlined,
+  'target': AimOutlined,
+  'star': StarOutlined,
+  'flame': FireOutlined,
+  'zap': ThunderboltOutlined,
+  'trophy': TrophyOutlined,
+  'sparkles': StarOutlined,
+  'brain': ExperimentOutlined,
+  'shield': SafetyOutlined,
+  'clock': ClockCircleOutlined,
 };
 
 export default function AchievementsPage() {
@@ -50,108 +57,159 @@ export default function AchievementsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-10 h-10 border-4 border-primary-500 border-t-transparent rounded-full spinner" />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 256 }}>
+        <Spin size="large" />
       </div>
     );
   }
 
+  const progressPercent = (earned.length / Math.max(achievements.length, 1)) * 100;
+
   return (
-    <div className="space-y-8 lg:space-y-10">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl lg:text-3xl font-bold text-white flex items-center gap-2">
-          <Award className="w-7 h-7 text-yellow-400" /> {t('achievementsTitle')}
-        </h1>
-        <p className="text-gray-400 mt-1">
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+        <Space align="center" size={8}>
+          <TrophyOutlined style={{ fontSize: 20, color: '#a8a29e' }} />
+          <Title level={3} style={{ margin: 0 }}>{t('achievementsTitle')}</Title>
+        </Space>
+        <Text type="secondary" style={{ display: 'block', marginTop: 8, fontSize: 14 }}>
           {t('achievementsUnlocked')} {earned.length} {t('achievementsOf')} {achievements.length} {t('achievementsAchievements')}
-        </p>
-        <div className="mt-3 h-2 bg-white/10 rounded-full overflow-hidden max-w-sm">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${(earned.length / Math.max(achievements.length, 1)) * 100}%` }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full"
-          />
-        </div>
+        </Text>
+        <Progress
+          percent={Math.round(progressPercent)}
+          strokeColor="#292524"
+          trailColor="#f5f5f4"
+          style={{ maxWidth: 384, marginTop: 12 }}
+          format={(p) => `${p}%`}
+        />
       </motion.div>
 
       {/* Earned */}
       {earned.length > 0 && (
         <section>
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" /> {t('achievementsEarned')}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
-            {earned.map((a, i) => (
-              <motion.div
-                key={a.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="glass rounded-2xl p-6 lg:p-7 card-hover"
-              >
-                <div className="flex items-start gap-4">
-                  <div
-                    className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 shadow-lg"
-                    style={{ background: `linear-gradient(135deg, ${a.badge_color}, ${a.badge_color}cc)` }}
+          <Space align="center" size={8} style={{ marginBottom: 20 }}>
+            <StarOutlined style={{ fontSize: 14, color: '#a8a29e' }} />
+            <Text strong style={{ fontSize: 12, color: '#57534e', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {t('achievementsEarned')}
+            </Text>
+          </Space>
+          <Row gutter={[20, 20]}>
+            {earned.map((a, i) => {
+              const IconComponent = iconMap[a.icon] || TrophyOutlined;
+              return (
+                <Col xs={24} sm={12} lg={8} key={a.id}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.04 }}
                   >
-                    <span className="text-2xl">{iconEmoji[a.icon] || '🏅'}</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-white truncate">{a.name}</h3>
-                    <p className="text-xs text-gray-400 mt-0.5">{a.description}</p>
-                    <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
-                      <span className="flex items-center gap-1 text-yellow-400">
-                        <Zap className="w-3 h-3" />{a.xp_reward} XP
-                      </span>
-                      {a.earned_at && (
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {new Date(a.earned_at).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                    <Card
+                      hoverable
+                      style={{ borderRadius: 16 }}
+                      styles={{ body: { padding: 24 } }}
+                    >
+                      <Space align="start" size={16}>
+                        <Avatar
+                          size={44}
+                          icon={<IconComponent />}
+                          style={{
+                            backgroundColor: '#292524',
+                            color: '#fff',
+                            borderRadius: 8,
+                            flexShrink: 0,
+                          }}
+                          shape="square"
+                        />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <Text strong style={{ fontSize: 14, display: 'block' }} ellipsis>
+                            {a.name}
+                          </Text>
+                          <Text type="secondary" style={{ fontSize: 12, display: 'block', marginTop: 2 }}>
+                            {a.description}
+                          </Text>
+                          <Space size={12} style={{ marginTop: 8 }}>
+                            <Tag
+                              icon={<ThunderboltOutlined />}
+                              color="default"
+                              style={{ fontSize: 11, margin: 0 }}
+                            >
+                              {a.xp_reward} XP
+                            </Tag>
+                            {a.earned_at && (
+                              <Text type="secondary" style={{ fontSize: 11 }}>
+                                <CalendarOutlined style={{ marginRight: 4 }} />
+                                {new Date(a.earned_at).toLocaleDateString()}
+                              </Text>
+                            )}
+                          </Space>
+                        </div>
+                      </Space>
+                    </Card>
+                  </motion.div>
+                </Col>
+              );
+            })}
+          </Row>
         </section>
       )}
 
       {/* Locked */}
       {locked.length > 0 && (
         <section>
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Lock className="w-5 h-5 text-gray-500" /> {t('achievementsLocked')}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
+          <Space align="center" size={8} style={{ marginBottom: 20 }}>
+            <LockOutlined style={{ fontSize: 14, color: '#a8a29e' }} />
+            <Text style={{ fontSize: 12, color: '#a8a29e', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {t('achievementsLocked')}
+            </Text>
+          </Space>
+          <Row gutter={[20, 20]}>
             {locked.map((a, i) => (
-              <motion.div
-                key={a.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="glass rounded-2xl p-6 lg:p-7 opacity-50"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-                    <Lock className="w-6 h-6 text-gray-500" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-400 truncate">{a.name}</h3>
-                    <p className="text-xs text-gray-500 mt-0.5">{a.description}</p>
-                    <div className="flex items-center gap-3 mt-2 text-xs text-gray-600">
-                      <span className="flex items-center gap-1">
-                        <Zap className="w-3 h-3" />{a.xp_reward} XP
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+              <Col xs={24} sm={12} lg={8} key={a.id}>
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.04 }}
+                >
+                  <Badge.Ribbon text={<LockOutlined />} color="default">
+                    <Card
+                      style={{ borderRadius: 16, opacity: 0.45 }}
+                      styles={{ body: { padding: 24 } }}
+                    >
+                      <Space align="start" size={16}>
+                        <Avatar
+                          size={44}
+                          icon={<LockOutlined />}
+                          style={{
+                            backgroundColor: '#f5f5f4',
+                            color: '#a8a29e',
+                            borderRadius: 8,
+                            flexShrink: 0,
+                          }}
+                          shape="square"
+                        />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <Text style={{ fontSize: 14, display: 'block', color: '#78716c' }} ellipsis>
+                            {a.name}
+                          </Text>
+                          <Text type="secondary" style={{ fontSize: 12, display: 'block', marginTop: 2 }}>
+                            {a.description}
+                          </Text>
+                          <Tag
+                            icon={<ThunderboltOutlined />}
+                            color="default"
+                            style={{ fontSize: 11, marginTop: 8 }}
+                          >
+                            {a.xp_reward} XP
+                          </Tag>
+                        </div>
+                      </Space>
+                    </Card>
+                  </Badge.Ribbon>
+                </motion.div>
+              </Col>
             ))}
-          </div>
+          </Row>
         </section>
       )}
     </div>

@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { GitCompareArrows, Sparkles, Zap, Target, Clock, Brain } from 'lucide-react';
+import {
+  ThunderboltOutlined,
+  FireOutlined,
+  ClockCircleOutlined,
+  ExperimentOutlined,
+  AimOutlined,
+} from '@ant-design/icons';
+import { Sparkles } from 'lucide-react';
+import { Card, Statistic, Row, Col, Typography, Space, Spin, Empty } from 'antd';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
@@ -10,8 +19,19 @@ import api from '../services/api';
 import { useI18n } from '../i18n';
 import type { ComparisonData } from '../types';
 
-const COLORS_AI = '#a855f7';
-const COLORS_STD = '#6b7280';
+const { Title, Text } = Typography;
+
+const COLORS_AI = '#292524';
+const COLORS_STD = '#d6d3d1';
+
+const tooltipContentStyle = {
+  background: '#ffffff',
+  border: '1px solid rgba(0,0,0,0.06)',
+  borderRadius: 8,
+  color: '#1c1917',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.04)',
+  fontSize: 12,
+} as const;
 
 export default function ComparisonPage() {
   const [data, setData] = useState<ComparisonData | null>(null);
@@ -27,18 +47,21 @@ export default function ComparisonPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-10 h-10 border-4 border-primary-500 border-t-transparent rounded-full spinner" />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 256 }}>
+        <Spin size="large" />
       </div>
     );
   }
 
   if (!data || (!data.ai_assisted.total_attempts && !data.non_ai_assisted.total_attempts)) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 text-gray-400">
-        <GitCompareArrows className="w-12 h-12 mb-3 opacity-40" />
-        <p className="text-lg font-medium">{t('compNoData')}</p>
-        <p className="text-sm mt-1">{t('compNoDataSub')}</p>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 256 }}>
+        <Empty description={
+          <Space direction="vertical" size={4} align="center">
+            <Text style={{ fontSize: 16, fontWeight: 500 }}>{t('compNoData')}</Text>
+            <Text type="secondary" style={{ fontSize: 14 }}>{t('compNoDataSub')}</Text>
+          </Space>
+        } />
       </div>
     );
   }
@@ -66,211 +89,225 @@ export default function ComparisonPage() {
   ];
 
   const statCards = [
-    {
-      title: t('compAIAccuracy'),
-      value: `${Math.round(ai.accuracy)}%`,
-      icon: Sparkles,
-      color: 'text-purple-400',
-      bg: 'bg-purple-500/10',
-    },
-    {
-      title: t('compStdAccuracy'),
-      value: `${Math.round(std.accuracy)}%`,
-      icon: Brain,
-      color: 'text-gray-400',
-      bg: 'bg-gray-500/10',
-    },
-    {
-      title: t('compAISpeed'),
-      value: `${Math.round(ai.avg_time * 10) / 10}s`,
-      icon: Clock,
-      color: 'text-blue-400',
-      bg: 'bg-blue-500/10',
-    },
-    {
-      title: t('compHintsUsed'),
-      value: ai.hint_usage.toString(),
-      icon: Zap,
-      color: 'text-yellow-400',
-      bg: 'bg-yellow-500/10',
-    },
+    { title: t('compAIAccuracy'), value: `${Math.round(ai.accuracy)}%`, icon: <Sparkles style={{ width: 16, height: 16, color: '#a8a29e' }} /> },
+    { title: t('compStdAccuracy'), value: `${Math.round(std.accuracy)}%`, icon: <ExperimentOutlined style={{ fontSize: 16, color: '#a8a29e' }} /> },
+    { title: t('compAISpeed'), value: `${Math.round(ai.avg_time * 10) / 10}s`, icon: <ClockCircleOutlined style={{ fontSize: 16, color: '#a8a29e' }} /> },
+    { title: t('compHintsUsed'), value: ai.hint_usage.toString(), icon: <ThunderboltOutlined style={{ fontSize: 16, color: '#a8a29e' }} /> },
   ];
 
   return (
-    <div className="space-y-8 lg:space-y-10">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl lg:text-3xl font-bold text-white flex items-center gap-2">
-          <GitCompareArrows className="w-7 h-7 text-primary-400" /> {t('compTitle')}
-        </h1>
-        <p className="text-gray-400 mt-1">{t('compSubtitle')}</p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
+      {/* Header */}
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+        <Space align="center" size={8}>
+          <FireOutlined style={{ fontSize: 20, color: '#a8a29e' }} />
+          <Title level={3} style={{ margin: 0 }}>{t('compTitle')}</Title>
+        </Space>
+        <Text type="secondary" style={{ display: 'block', marginTop: 8, fontSize: 14 }}>
+          {t('compSubtitle')}
+        </Text>
       </motion.div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+      <Row gutter={[20, 20]}>
         {statCards.map((card, i) => (
-          <motion.div
-            key={card.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="glass rounded-xl p-5 lg:p-6"
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <div className={`p-2 rounded-lg ${card.bg}`}>
-                <card.icon className={`w-4 h-4 ${card.color}`} />
-              </div>
-              <span className="text-xs text-gray-400">{card.title}</span>
-            </div>
-            <div className={`text-2xl font-bold ${card.color}`}>{card.value}</div>
-          </motion.div>
+          <Col xs={12} lg={6} key={card.title}>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.04 }}
+            >
+              <Card style={{ borderRadius: 16 }} styles={{ body: { padding: 24 } }}>
+                <Statistic
+                  title={
+                    <Space size={8} style={{ marginBottom: 8 }}>
+                      {card.icon}
+                      <Text type="secondary" style={{ fontSize: 12 }}>{card.title}</Text>
+                    </Space>
+                  }
+                  value={card.value}
+                  valueStyle={{ fontSize: 30, fontWeight: 600, color: '#1c1917' }}
+                />
+              </Card>
+            </motion.div>
+          </Col>
         ))}
-      </div>
+      </Row>
 
       {/* Charts grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+      <Row gutter={[24, 24]}>
         {/* Bar Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="glass rounded-2xl p-6 lg:p-8"
-        >
-          <h3 className="text-white font-semibold mb-5">{t('compPerformance')}</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={barData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="name" tick={{ fill: '#9ca3af', fontSize: 12 }} />
-              <YAxis tick={{ fill: '#9ca3af', fontSize: 12 }} />
-              <Tooltip
-                contentStyle={{ background: '#1f2937', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, color: '#fff' }}
-              />
-              <Legend />
-              <Bar dataKey="AI" fill={COLORS_AI} radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Standard" fill={COLORS_STD} radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </motion.div>
+        <Col xs={24} lg={12}>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+          >
+            <Card
+              title={<Text strong style={{ fontSize: 14 }}>{t('compPerformance')}</Text>}
+              style={{ borderRadius: 16 }}
+              styles={{ body: { padding: 28 } }}
+            >
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart data={barData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.04)" />
+                  <XAxis dataKey="name" tick={{ fill: '#a8a29e', fontSize: 11 }} />
+                  <YAxis tick={{ fill: '#a8a29e', fontSize: 11 }} />
+                  <Tooltip contentStyle={tooltipContentStyle} />
+                  <Legend />
+                  <Bar dataKey="AI" fill={COLORS_AI} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="Standard" fill={COLORS_STD} radius={[3, 3, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          </motion.div>
+        </Col>
 
         {/* Radar Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="glass rounded-2xl p-6 lg:p-8"
-        >
-          <h3 className="text-white font-semibold mb-5">{t('compSkillRadar')}</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <RadarChart data={radarData}>
-              <PolarGrid stroke="rgba(255,255,255,0.1)" />
-              <PolarAngleAxis dataKey="metric" tick={{ fill: '#9ca3af', fontSize: 12 }} />
-              <PolarRadiusAxis tick={false} axisLine={false} />
-              <Radar name="AI" dataKey="AI" stroke={COLORS_AI} fill={COLORS_AI} fillOpacity={0.3} />
-              <Radar name="Standard" dataKey="Standard" stroke={COLORS_STD} fill={COLORS_STD} fillOpacity={0.3} />
-              <Legend />
-            </RadarChart>
-          </ResponsiveContainer>
-        </motion.div>
+        <Col xs={24} lg={12}>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Card
+              title={<Text strong style={{ fontSize: 14 }}>{t('compSkillRadar')}</Text>}
+              style={{ borderRadius: 16 }}
+              styles={{ body: { padding: 28 } }}
+            >
+              <ResponsiveContainer width="100%" height={280}>
+                <RadarChart data={radarData}>
+                  <PolarGrid stroke="rgba(0,0,0,0.04)" />
+                  <PolarAngleAxis dataKey="metric" tick={{ fill: '#a8a29e', fontSize: 11 }} />
+                  <PolarRadiusAxis tick={false} axisLine={false} />
+                  <Radar name="AI" dataKey="AI" stroke={COLORS_AI} fill={COLORS_AI} fillOpacity={0.15} />
+                  <Radar name="Standard" dataKey="Standard" stroke={COLORS_STD} fill={COLORS_STD} fillOpacity={0.15} />
+                  <Legend />
+                </RadarChart>
+              </ResponsiveContainer>
+            </Card>
+          </motion.div>
+        </Col>
 
         {/* Pie Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="glass rounded-2xl p-6 lg:p-8"
-        >
-          <h3 className="text-white font-semibold mb-5">{t('compQuizDistribution')}</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={pieData}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={100}
-                dataKey="value"
-                nameKey="name"
-                label={({ name, percent }: any) => `${name ?? ''} ${((percent ?? 0) * 100).toFixed(0)}%`}
-              >
-                <Cell fill={COLORS_AI} />
-                <Cell fill={COLORS_STD} />
-              </Pie>
-              <Tooltip
-                contentStyle={{ background: '#1f2937', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, color: '#fff' }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        </motion.div>
+        <Col xs={24} lg={12}>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+          >
+            <Card
+              title={<Text strong style={{ fontSize: 14 }}>{t('compQuizDistribution')}</Text>}
+              style={{ borderRadius: 16 }}
+              styles={{ body: { padding: 28 } }}
+            >
+              <ResponsiveContainer width="100%" height={280}>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={95}
+                    dataKey="value"
+                    nameKey="name"
+                    label={({ name, percent }: any) => `${name ?? ''} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                  >
+                    <Cell fill={COLORS_AI} />
+                    <Cell fill={COLORS_STD} />
+                  </Pie>
+                  <Tooltip contentStyle={tooltipContentStyle} />
+                </PieChart>
+              </ResponsiveContainer>
+            </Card>
+          </motion.div>
+        </Col>
 
         {/* Key Insights */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="glass rounded-2xl p-6 lg:p-8"
-        >
-          <h3 className="text-white font-semibold mb-5">{t('compKeyInsights')}</h3>
-          <div className="space-y-4">
-            {ai.accuracy > std.accuracy ? (
-              <InsightRow
-                icon={<Sparkles className="w-4 h-4 text-purple-400" />}
-                text={`AI mode boosted your accuracy by ${Math.round(ai.accuracy - std.accuracy)}%`}
-                positive
-              />
-            ) : ai.accuracy < std.accuracy ? (
-              <InsightRow
-                icon={<Brain className="w-4 h-4 text-gray-400" />}
-                text={`You performed ${Math.round(std.accuracy - ai.accuracy)}% better without AI`}
-                positive
-              />
-            ) : (
-              <InsightRow
-                icon={<Target className="w-4 h-4 text-blue-400" />}
-                text="Equal accuracy in both modes"
-              />
-            )}
+        <Col xs={24} lg={12}>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Card
+              title={<Text strong style={{ fontSize: 14 }}>{t('compKeyInsights')}</Text>}
+              style={{ borderRadius: 16 }}
+              styles={{ body: { padding: 28 } }}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {ai.accuracy > std.accuracy ? (
+                  <InsightRow
+                    icon={<Sparkles style={{ width: 14, height: 14, color: '#57534e' }} />}
+                    text={`AI mode boosted your accuracy by ${Math.round(ai.accuracy - std.accuracy)}%`}
+                    positive
+                  />
+                ) : ai.accuracy < std.accuracy ? (
+                  <InsightRow
+                    icon={<ExperimentOutlined style={{ fontSize: 14, color: '#57534e' }} />}
+                    text={`You performed ${Math.round(std.accuracy - ai.accuracy)}% better without AI`}
+                    positive
+                  />
+                ) : (
+                  <InsightRow
+                    icon={<AimOutlined style={{ fontSize: 14, color: '#a8a29e' }} />}
+                    text="Equal accuracy in both modes"
+                  />
+                )}
 
-            {ai.avg_time < std.avg_time ? (
-              <InsightRow
-                icon={<Clock className="w-4 h-4 text-blue-400" />}
-                text={`AI mode helped you answer ${Math.round(std.avg_time - ai.avg_time)}s faster on average`}
-                positive
-              />
-            ) : ai.avg_time > std.avg_time ? (
-              <InsightRow
-                icon={<Clock className="w-4 h-4 text-orange-400" />}
-                text={`Standard mode was ${Math.round(ai.avg_time - std.avg_time)}s faster on average`}
-              />
-            ) : null}
+                {ai.avg_time < std.avg_time ? (
+                  <InsightRow
+                    icon={<ClockCircleOutlined style={{ fontSize: 14, color: '#57534e' }} />}
+                    text={`AI mode helped you answer ${Math.round(std.avg_time - ai.avg_time)}s faster on average`}
+                    positive
+                  />
+                ) : ai.avg_time > std.avg_time ? (
+                  <InsightRow
+                    icon={<ClockCircleOutlined style={{ fontSize: 14, color: '#a8a29e' }} />}
+                    text={`Standard mode was ${Math.round(ai.avg_time - std.avg_time)}s faster on average`}
+                  />
+                ) : null}
 
-            <InsightRow
-              icon={<Zap className="w-4 h-4 text-yellow-400" />}
-              text="Standard mode earns 1.5x XP bonus per correct answer"
-              positive
-            />
+                <InsightRow
+                  icon={<ThunderboltOutlined style={{ fontSize: 14, color: '#57534e' }} />}
+                  text="Standard mode earns 1.5x XP bonus per correct answer"
+                  positive
+                />
 
-            <InsightRow
-              icon={<Target className="w-4 h-4 text-green-400" />}
-              text={`Total quizzes taken: ${ai.total_attempts + std.total_attempts} (AI: ${ai.total_attempts}, Std: ${std.total_attempts})`}
-            />
+                <InsightRow
+                  icon={<AimOutlined style={{ fontSize: 14, color: '#57534e' }} />}
+                  text={`Total quizzes taken: ${ai.total_attempts + std.total_attempts} (AI: ${ai.total_attempts}, Std: ${std.total_attempts})`}
+                />
 
-            {ai.hint_usage > 0 && (
-              <InsightRow
-                icon={<Sparkles className="w-4 h-4 text-amber-400" />}
-                text={`You used AI hints ${ai.hint_usage} time${ai.hint_usage > 1 ? 's' : ''}`}
-              />
-            )}
-          </div>
-        </motion.div>
-      </div>
+                {ai.hint_usage > 0 && (
+                  <InsightRow
+                    icon={<Sparkles style={{ width: 14, height: 14, color: '#a8a29e' }} />}
+                    text={`You used AI hints ${ai.hint_usage} time${ai.hint_usage > 1 ? 's' : ''}`}
+                  />
+                )}
+              </div>
+            </Card>
+          </motion.div>
+        </Col>
+      </Row>
     </div>
   );
 }
 
-function InsightRow({ icon, text, positive }: { icon: React.ReactNode; text: string; positive?: boolean }) {
+function InsightRow({ icon, text, positive }: { icon: ReactNode; text: string; positive?: boolean }) {
   return (
-    <div className="flex items-start gap-3 p-3 rounded-xl bg-white/5">
-      <div className="mt-0.5">{icon}</div>
-      <span className={`text-sm ${positive ? 'text-gray-200' : 'text-gray-400'}`}>{text}</span>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 12,
+        padding: 14,
+        borderRadius: 8,
+        background: '#fafaf9',
+      }}
+    >
+      <div style={{ marginTop: 2 }}>{icon}</div>
+      <span style={{ fontSize: 14, color: positive ? '#57534e' : '#a8a29e' }}>{text}</span>
     </div>
   );
 }

@@ -1,10 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, Send, User, Sparkles, BookOpen, Loader2, Trash2 } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  RobotOutlined,
+  SendOutlined,
+  UserOutlined,
+  DeleteOutlined,
+  ReadOutlined,
+} from '@ant-design/icons';
+import { Avatar, Button, Empty, Input, Select, Space, Spin, Typography } from 'antd';
 import ReactMarkdown from 'react-markdown';
 import api from '../services/api';
 import { useI18n } from '../i18n';
 import type { ChatMessage } from '../types';
+
+const { Text, Title } = Typography;
+const { TextArea } = Input;
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -18,10 +28,11 @@ export default function ChatPage() {
   useEffect(() => {
     api.get('/courses').then((r) => {
       const all: { id: number; title: string }[] = [];
-      r.data.forEach((c: any) => c.lessons?.forEach((l: any) => all.push({ id: l.id, title: l.title })));
+      r.data.forEach((c: any) =>
+        c.lessons?.forEach((l: any) => all.push({ id: l.id, title: l.title })),
+      );
       setLessons(all);
     });
-
     api.get('/chat/history').then((r) => setMessages(r.data)).catch(() => {});
   }, []);
 
@@ -47,7 +58,10 @@ export default function ChatPage() {
       };
       setMessages((prev) => [...prev, botMsg]);
     } catch {
-      setMessages((prev) => [...prev, { role: 'assistant', content: 'Sorry, something went wrong.', created_at: new Date().toISOString() }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: 'Sorry, something went wrong.', created_at: new Date().toISOString() },
+      ]);
     } finally {
       setSending(false);
     }
@@ -63,61 +77,96 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-4 pb-5 border-b border-white/10">
-        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center">
-          <Bot className="w-5 h-5 text-white" />
-        </div>
-        <div className="flex-1">
-          <h1 className="text-lg lg:text-xl font-bold text-white">{t('chatTitle')}</h1>
-          <p className="text-xs text-gray-400">{t('chatSubtitle')}</p>
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 7rem)' }}>
+      {/* ---- Header ---- */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 16,
+          paddingBottom: 20,
+          borderBottom: '1px solid #f5f5f5',
+        }}
+      >
+        <Avatar
+          size={40}
+          icon={<RobotOutlined />}
+          style={{ backgroundColor: '#1a1a1a', flexShrink: 0 }}
+        />
+        <div style={{ flex: 1 }}>
+          <Title level={5} style={{ margin: 0 }}>
+            {t('chatTitle')}
+          </Title>
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            {t('chatSubtitle')}
+          </Text>
         </div>
 
-        {/* Lesson Selector */}
-        <div className="flex items-center gap-2">
+        <Space size="middle">
           {messages.length > 0 && (
-            <button
+            <Button
+              size="small"
+              icon={<DeleteOutlined />}
+              danger
               onClick={handleClear}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-gray-400 hover:text-red-400 hover:bg-red-500/10 border border-white/10 transition-all"
-              title={t('chatClear')}
             >
-              <Trash2 className="w-3.5 h-3.5" />
               {t('chatClear')}
-            </button>
+            </Button>
           )}
-          <BookOpen className="w-4 h-4 text-gray-400" />
-          <select
-            value={lessonId ?? ''}
-            onChange={(e) => setLessonId(e.target.value ? Number(e.target.value) : undefined)}
-            className="text-sm bg-white/5 border border-white/10 text-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary-500"
-          >
-            <option value="">{t('chatGeneralChat')}</option>
-            {lessons.map((l) => (
-              <option key={l.id} value={l.id}>{l.title}</option>
-            ))}
-          </select>
-        </div>
-      </motion.div>
+          <Select
+            value={lessonId ?? null}
+            onChange={(v) => setLessonId(v ?? undefined)}
+            allowClear
+            placeholder={t('chatGeneralChat')}
+            suffixIcon={<ReadOutlined />}
+            style={{ minWidth: 180 }}
+            size="small"
+            options={lessons.map((l) => ({ label: l.title, value: l.id }))}
+          />
+        </Space>
+      </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto py-6 space-y-5 scrollbar-thin">
+      {/* ---- Messages ---- */}
+      <div
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '32px 0',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 20,
+        }}
+      >
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
-            <Sparkles className="w-12 h-12 mb-3 opacity-30" />
-            <p className="text-sm">{t('chatEmptyTitle')}</p>
-            <p className="text-xs mt-1">{t('chatEmptySub')}</p>
-            <div className="flex flex-wrap gap-2 mt-4 justify-center">
-              {[t('chatSuggestion1'), t('chatSuggestion2'), t('chatSuggestion3'), t('chatSuggestion4')].map((q) => (
-                <button
-                  key={q}
-                  onClick={() => { setInput(q); }}
-                  className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-400 hover:bg-white/10 hover:text-gray-200 transition"
-                >
-                  {q}
-                </button>
-              ))}
-            </div>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+            }}
+          >
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description={
+                <Space direction="vertical" size={4}>
+                  <Text type="secondary">{t('chatEmptyTitle')}</Text>
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    {t('chatEmptySub')}
+                  </Text>
+                </Space>
+              }
+            />
+            <Space wrap style={{ marginTop: 20, justifyContent: 'center' }}>
+              {[t('chatSuggestion1'), t('chatSuggestion2'), t('chatSuggestion3'), t('chatSuggestion4')].map(
+                (q) => (
+                  <Button key={q} size="small" onClick={() => setInput(q)}>
+                    {q}
+                  </Button>
+                ),
+              )}
+            </Space>
           </div>
         )}
 
@@ -125,53 +174,85 @@ export default function ChatPage() {
           {messages.map((msg, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}
+              transition={{ duration: 0.15 }}
+              style={{
+                display: 'flex',
+                gap: 12,
+                justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
+              }}
             >
               {msg.role === 'assistant' && (
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center shrink-0 mt-0.5">
-                  <Bot className="w-4 h-4 text-white" />
-                </div>
+                <Avatar
+                  size={32}
+                  icon={<RobotOutlined />}
+                  style={{ backgroundColor: '#1a1a1a', flexShrink: 0, marginTop: 2 }}
+                />
               )}
+
               <div
-                className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm ${
-                  msg.role === 'user'
-                    ? 'bg-primary-500/20 border border-primary-500/30 text-gray-200'
-                    : 'glass text-gray-300'
-                }`}
+                style={{
+                  maxWidth: '75%',
+                  padding: '12px 16px',
+                  borderRadius: 12,
+                  fontSize: 14,
+                  lineHeight: 1.6,
+                  ...(msg.role === 'user'
+                    ? { background: '#1a1a1a', color: '#fff' }
+                    : {
+                        background: '#fafafa',
+                        border: '1px solid #f0f0f0',
+                        color: 'rgba(0,0,0,0.65)',
+                      }),
+                }}
               >
                 {msg.role === 'assistant' ? (
-                  <div className="lesson-content prose-sm">
+                  <div className="lesson-content">
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
                   </div>
                 ) : (
                   msg.content
                 )}
               </div>
+
               {msg.role === 'user' && (
-                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <User className="w-4 h-4 text-gray-400" />
-                </div>
+                <Avatar
+                  size={32}
+                  icon={<UserOutlined />}
+                  style={{ backgroundColor: '#f5f5f5', color: '#999', flexShrink: 0, marginTop: 2 }}
+                />
               )}
             </motion.div>
           ))}
         </AnimatePresence>
 
         {sending && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center shrink-0">
-              <Bot className="w-4 h-4 text-white" />
-            </div>
-            <div className="glass px-4 py-3 rounded-2xl flex items-center gap-3 text-sm text-gray-400">
-              <Loader2 className="w-4 h-4 animate-spin text-primary-400" />
-              <span>{t('chatThinking')}</span>
-              <span className="flex gap-1">
-                <span className="w-1.5 h-1.5 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-1.5 h-1.5 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-1.5 h-1.5 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-              </span>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={{ display: 'flex', gap: 12 }}
+          >
+            <Avatar
+              size={32}
+              icon={<RobotOutlined />}
+              style={{ backgroundColor: '#1a1a1a', flexShrink: 0 }}
+            />
+            <div
+              style={{
+                background: '#fafafa',
+                border: '1px solid #f0f0f0',
+                padding: '12px 16px',
+                borderRadius: 12,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+              }}
+            >
+              <Spin size="small" />
+              <Text type="secondary" style={{ fontSize: 13 }}>
+                {t('chatThinking')}
+              </Text>
             </div>
           </motion.div>
         )}
@@ -179,26 +260,30 @@ export default function ChatPage() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
-      <div className="pt-5 border-t border-white/10">
-        <form
-          onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-          className="flex items-center gap-3"
-        >
-          <input
+      {/* ---- Input bar ---- */}
+      <div style={{ paddingTop: 20, borderTop: '1px solid #f5f5f5' }}>
+        <Space.Compact style={{ display: 'flex', width: '100%' }}>
+          <TextArea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={t('chatPlaceholder')}
-            className="flex-1 px-5 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 text-sm"
+            autoSize={{ minRows: 1, maxRows: 4 }}
+            onPressEnter={(e) => {
+              if (!e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+            style={{ flex: 1 }}
           />
-          <button
-            type="submit"
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            onClick={handleSend}
             disabled={!input.trim() || sending}
-            className="p-3 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500 text-white disabled:opacity-40 hover:from-primary-600 hover:to-accent-600 transition-all"
-          >
-            <Send className="w-5 h-5" />
-          </button>
-        </form>
+            style={{ height: 'auto' }}
+          />
+        </Space.Compact>
       </div>
     </div>
   );

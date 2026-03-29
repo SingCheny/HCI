@@ -1,10 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BookOpen, CheckCircle, Clock, ChevronRight, Star } from 'lucide-react';
+import {
+  CheckCircleOutlined,
+  ReadOutlined,
+  ClockCircleOutlined,
+  StarOutlined,
+  RightOutlined,
+} from '@ant-design/icons';
+import { Card, Progress, Tag, Typography, Space, Row, Col, Spin } from 'antd';
 import api from '../services/api';
 import { useI18n } from '../i18n';
 import type { Course } from '../types';
+
+const { Title, Text } = Typography;
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -20,116 +29,197 @@ export default function CoursesPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-10 h-10 border-4 border-primary-500 border-t-transparent rounded-full spinner" />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 256 }}>
+        <Spin size="large" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 lg:space-y-10">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl lg:text-3xl font-bold text-white">{t('coursesTitle')}</h1>
-        <p className="text-gray-400 mt-1">{t('coursesSubtitle')}</p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+        <Title level={3} style={{ margin: 0, fontWeight: 600, letterSpacing: '-0.025em' }}>
+          {t('coursesTitle')}
+        </Title>
+        <Text type="secondary" style={{ fontSize: 14, marginTop: 8, display: 'block' }}>
+          {t('coursesSubtitle')}
+        </Text>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+      <Row gutter={[24, 24]}>
         {courses.map((course, idx) => {
           const done = course.lessons.filter((l) => l.completed).length;
           const total = course.lessons.length;
-          const pct = total > 0 ? (done / total) * 100 : 0;
+          const pct = total > 0 ? Math.round((done / total) * 100) : 0;
           const allDone = done === total && total > 0;
 
           return (
-            <motion.div
-              key={course.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.08 }}
-              className="glass rounded-2xl overflow-hidden card-hover"
-            >
-              {/* Color top bar */}
-              <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${course.color}, ${course.color}88)` }} />
-              
-              <div className="p-6 lg:p-8">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center"
-                      style={{ background: course.color + '25' }}
-                    >
-                      <BookOpen className="w-6 h-6" style={{ color: course.color }} />
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-semibold text-white">{course.title}</h2>
-                      <p className="text-xs text-gray-400">{total} {t('coursesLessons')}</p>
-                    </div>
-                  </div>
-                  {allDone && (
-                    <div className="flex items-center gap-1 text-green-400 text-xs font-medium bg-green-500/10 px-2 py-1 rounded-full">
-                      <CheckCircle className="w-3 h-3" /> {t('coursesComplete')}
-                    </div>
-                  )}
-                </div>
+            <Col xs={24} lg={12} key={course.id}>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.06 }}
+              >
+                <Card
+                  hoverable
+                  bordered={false}
+                  style={{
+                    borderRadius: 16,
+                    border: '1px solid #f5f5f4',
+                    overflow: 'hidden',
+                  }}
+                  styles={{ body: { padding: 0 } }}
+                >
+                  {/* Top accent line */}
+                  <div style={{ height: 2, background: '#e7e5e4' }} />
 
-                <p className="text-sm text-gray-400 mb-4 line-clamp-2">{course.description}</p>
-
-                {/* Progress bar */}
-                <div className="mb-4">
-                  <div className="flex justify-between text-xs text-gray-400 mb-1">
-                    <span>{t('coursesProgress')}</span>
-                    <span>{done}/{total} {t('coursesLessons')}</span>
-                  </div>
-                  <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full rounded-full"
-                      style={{ background: course.color }}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${pct}%` }}
-                      transition={{ duration: 0.8, ease: 'easeOut' }}
-                    />
-                  </div>
-                </div>
-
-                {/* Lessons List */}
-                <div className="space-y-2.5">
-                  {course.lessons.map((lesson) => (
-                    <Link
-                      key={lesson.id}
-                      to={`/lesson/${lesson.id}`}
-                      className="flex items-center justify-between p-3 lg:p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-all group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
-                          lesson.completed
-                            ? 'bg-green-500/20 text-green-400'
-                            : 'bg-white/10 text-gray-400'
-                        }`}>
-                          {lesson.completed ? (
-                            <CheckCircle className="w-4 h-4" />
-                          ) : (
-                            <span className="text-xs font-medium">{lesson.order_index + 1}</span>
-                          )}
+                  <div style={{ padding: 28 }}>
+                    {/* Header */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20 }}>
+                      <Space size={12} align="start">
+                        <div
+                          style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 8,
+                            background: '#fafaf9',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <ReadOutlined style={{ fontSize: 16, color: '#a8a29e' }} />
                         </div>
                         <div>
-                          <p className="text-sm text-gray-200 group-hover:text-white transition">{lesson.title}</p>
-                          <div className="flex items-center gap-2 text-xs text-gray-500">
-                            <Clock className="w-3 h-3" />
-                            <span>{lesson.estimated_minutes} {t('coursesMin')}</span>
-                            <Star className="w-3 h-3" />
-                            <span>{lesson.xp_reward} XP</span>
-                          </div>
+                          <Text strong style={{ fontSize: 16, color: '#292524', display: 'block' }}>
+                            {course.title}
+                          </Text>
+                          <Text style={{ fontSize: 12, color: '#a8a29e' }}>
+                            {total} {t('coursesLessons')}
+                          </Text>
                         </div>
+                      </Space>
+                      {allDone && (
+                        <Tag
+                          color="success"
+                          icon={<CheckCircleOutlined />}
+                          style={{ borderRadius: 6, fontSize: 12, fontWeight: 500, margin: 0 }}
+                        >
+                          {t('coursesComplete')}
+                        </Tag>
+                      )}
+                    </div>
+
+                    {/* Description */}
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        color: '#a8a29e',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        marginBottom: 20,
+                      }}
+                    >
+                      {course.description}
+                    </Text>
+
+                    {/* Progress bar */}
+                    <div style={{ marginBottom: 24 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                        <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('coursesProgress')}</Text>
+                        <Text style={{ fontSize: 12, color: '#a8a29e' }}>
+                          {done}/{total} {t('coursesLessons')}
+                        </Text>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-gray-500 group-hover:text-primary-400 transition" />
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
+                      <Progress
+                        percent={pct}
+                        strokeColor="#292524"
+                        trailColor="#f5f5f4"
+                        showInfo={false}
+                        size={['100%', 6]}
+                      />
+                    </div>
+
+                    {/* Lessons List */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {course.lessons.map((lesson) => (
+                        <Link
+                          key={lesson.id}
+                          to={`/lesson/${lesson.id}`}
+                          style={{ textDecoration: 'none' }}
+                        >
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '10px 12px',
+                              borderRadius: 8,
+                              background: '#fafaf9',
+                              transition: 'all 0.2s',
+                              cursor: 'pointer',
+                            }}
+                            onMouseEnter={(e) => {
+                              (e.currentTarget as HTMLDivElement).style.background = '#f5f5f4';
+                            }}
+                            onMouseLeave={(e) => {
+                              (e.currentTarget as HTMLDivElement).style.background = '#fafaf9';
+                            }}
+                          >
+                            <Space size={12}>
+                              <div
+                                style={{
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: 6,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: 12,
+                                  background: lesson.completed ? '#f0fdf4' : '#f5f5f4',
+                                  color: lesson.completed ? '#22c55e' : '#a8a29e',
+                                }}
+                              >
+                                {lesson.completed ? (
+                                  <CheckCircleOutlined style={{ fontSize: 14 }} />
+                                ) : (
+                                  <span style={{ fontWeight: 500 }}>{lesson.order_index + 1}</span>
+                                )}
+                              </div>
+                              <div>
+                                <Text style={{ fontSize: 14, color: '#57534e', display: 'block' }}>
+                                  {lesson.title}
+                                </Text>
+                                <Space size={8} style={{ marginTop: 2 }}>
+                                  <Space size={4}>
+                                    <ClockCircleOutlined style={{ fontSize: 10, color: '#a8a29e' }} />
+                                    <Text style={{ fontSize: 11, color: '#a8a29e' }}>
+                                      {lesson.estimated_minutes} {t('coursesMin')}
+                                    </Text>
+                                  </Space>
+                                  <Space size={4}>
+                                    <StarOutlined style={{ fontSize: 10, color: '#a8a29e' }} />
+                                    <Text style={{ fontSize: 11, color: '#a8a29e' }}>
+                                      {lesson.xp_reward} XP
+                                    </Text>
+                                  </Space>
+                                </Space>
+                              </div>
+                            </Space>
+                            <RightOutlined style={{ fontSize: 12, color: '#d6d3d1' }} />
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            </Col>
           );
         })}
-      </div>
+      </Row>
     </div>
   );
 }

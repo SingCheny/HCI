@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ConfigProvider, Spin, App as AntApp } from 'antd';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { I18nProvider, useI18n } from './i18n';
+import themeConfig from './theme/themeConfig';
 import Layout from './components/Layout';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
@@ -13,7 +15,6 @@ import FlashcardsPage from './pages/FlashcardsPage';
 import StudyPlanPage from './pages/StudyPlanPage';
 import FocusTimerPage from './pages/FocusTimerPage';
 import WrongAnswersPage from './pages/WrongAnswersPage';
-import { Toaster } from './components/Toast';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -25,11 +26,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function LoadingScreen() {
   const { t } = useI18n();
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <div className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full spinner mx-auto mb-4" />
-        <p className="text-primary-300 text-lg">{t('loading')}</p>
-      </div>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fafafa' }}>
+      <Spin size="large" tip={t('loading')} />
     </div>
   );
 }
@@ -38,8 +36,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <I18nProvider>
+      <ConfigProvider theme={themeConfig}>
+      <AntApp>
       <AuthProvider>
-        <Toaster />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route
@@ -65,6 +64,8 @@ export default function App() {
           />
         </Routes>
       </AuthProvider>
+      </AntApp>
+      </ConfigProvider>
       </I18nProvider>
     </BrowserRouter>
   );

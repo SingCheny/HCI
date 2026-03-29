@@ -1,11 +1,34 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Swords, Shield, Heart, Zap, Trophy, Star, ChevronRight,
-  BookOpen, CheckCircle, XCircle, Flame, RotateCcw, Crown, Clock,
+  Swords, Shield, Heart, Crown, Flame,
 } from 'lucide-react';
+import {
+  ThunderboltOutlined,
+  ClockCircleOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  RightOutlined,
+  ReadOutlined,
+  ReloadOutlined,
+} from '@ant-design/icons';
+import {
+  Card,
+  Button,
+  Progress,
+  Alert,
+  Typography,
+  Tag,
+  Space,
+  Row,
+  Col,
+  Statistic,
+  Spin,
+} from 'antd';
 import api from '../services/api';
 import { useI18n } from '../i18n';
+
+const { Title, Text } = Typography;
 
 interface WrongAnswer {
   attempt_id: number;
@@ -45,9 +68,14 @@ export default function WrongAnswersPage() {
   const TIME_LIMIT = 10;
 
   const fetchItems = useCallback(() => {
-    api.get('/wrong-answers').then((r) => { setAllItems(r.data); setLoading(false); });
+    api.get('/wrong-answers').then((r) => {
+      setAllItems(r.data);
+      setLoading(false);
+    });
   }, []);
-  useEffect(() => { fetchItems(); }, [fetchItems]);
+  useEffect(() => {
+    fetchItems();
+  }, [fetchItems]);
 
   const startChallenge = () => {
     const shuffled = [...allItems].sort(() => Math.random() - 0.5);
@@ -64,28 +92,27 @@ export default function WrongAnswersPage() {
     setPhase('battle');
   };
 
-  // Countdown timer for battle phase
   useEffect(() => {
     if (phase === 'battle' && !answered) {
       setCountdown(TIME_LIMIT);
       countdownRef.current = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
-            // Time's up — treat as wrong answer
             if (countdownRef.current) clearInterval(countdownRef.current);
             return 0;
           }
           return prev - 1;
         });
       }, 1000);
-      return () => { if (countdownRef.current) clearInterval(countdownRef.current); };
+      return () => {
+        if (countdownRef.current) clearInterval(countdownRef.current);
+      };
     }
     if (answered && countdownRef.current) {
       clearInterval(countdownRef.current);
     }
   }, [phase, current, answered]);
 
-  // Handle timeout
   useEffect(() => {
     if (phase === 'battle' && !answered && countdown === 0) {
       handleTimeout();
@@ -98,15 +125,16 @@ export default function WrongAnswersPage() {
     setIsCorrect(false);
     setStreak(0);
     setHp((prev) => prev - 1);
-    // Call retry API with wrong answer
     const item = queue[current];
     const wrongAnswer = (item.correct_answer + 1) % item.options.length;
-    api.post(`/wrong-answers/${item.quiz_id}/retry`, {
-      quiz_id: item.quiz_id,
-      selected_answer: wrongAnswer,
-      time_spent_seconds: TIME_LIMIT,
-      used_hint: false,
-    }).catch(() => {});
+    api
+      .post(`/wrong-answers/${item.quiz_id}/retry`, {
+        quiz_id: item.quiz_id,
+        selected_answer: wrongAnswer,
+        time_spent_seconds: TIME_LIMIT,
+        used_hint: false,
+      })
+      .catch(() => {});
   };
 
   const handleSelect = async (optIdx: number) => {
@@ -168,262 +196,327 @@ export default function WrongAnswersPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-10 h-10 border-4 border-primary-500 border-t-transparent rounded-full spinner" />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 256 }}>
+        <Spin size="large" />
       </div>
     );
   }
 
-  // ===== LOBBY =====
+  // --------------- LOBBY ---------------
   if (phase === 'lobby') {
     return (
-      <div className="space-y-8 lg:space-y-10">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center pt-8">
-          <div className="w-20 h-20 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg shadow-red-500/30">
-            <Swords className="w-10 h-10 text-white" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', paddingTop: 40 }}>
+          <div style={{
+            width: 64, height: 64, margin: '0 auto 20px', borderRadius: 12,
+            background: '#1c1917', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Swords style={{ width: 28, height: 28, color: 'white' }} />
           </div>
-          <h1 className="text-3xl lg:text-4xl font-bold text-white">{t('wrongChallengeTitle')}</h1>
-          <p className="text-gray-400 mt-2">{t('wrongChallengeDesc')}</p>
+          <Title level={3} style={{ marginBottom: 4 }}>{t('wrongChallengeTitle')}</Title>
+          <Text type="secondary" style={{ fontSize: 14 }}>{t('wrongChallengeDesc')}</Text>
         </motion.div>
 
-        {/* Rules */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass rounded-2xl p-6 lg:p-8 space-y-4">
-          <h2 className="text-sm font-semibold text-white">{t('wrongRules')}</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 lg:gap-5">
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-white/5">
-              <Heart className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-white">{t('wrongRuleHP')}</p>
-                <p className="text-xs text-gray-500">{t('wrongRuleHPDesc')}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-white/5">
-              <Flame className="w-5 h-5 text-orange-400 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-white">{t('wrongRuleStreak')}</p>
-                <p className="text-xs text-gray-500">{t('wrongRuleStreakDesc')}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-white/5">
-              <Zap className="w-5 h-5 text-yellow-400 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-white">{t('wrongRuleXP')}</p>
-                <p className="text-xs text-gray-500">{t('wrongRuleXPDesc')}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-white/5">
-              <Clock className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-white">{t('wrongRuleTime')}</p>
-                <p className="text-xs text-gray-500">{t('wrongRuleTimeDesc')}</p>
-              </div>
-            </div>
-          </div>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
+          <Card style={{ borderRadius: 16 }}>
+            <Text style={{ fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 16, display: 'block' }} type="secondary">
+              {t('wrongRules')}
+            </Text>
+            <Row gutter={[12, 12]}>
+              {[
+                { iconNode: <Heart style={{ width: 16, height: 16, color: '#a8a29e' }} />, label: t('wrongRuleHP'), desc: t('wrongRuleHPDesc') },
+                { iconNode: <Flame style={{ width: 16, height: 16, color: '#a8a29e' }} />, label: t('wrongRuleStreak'), desc: t('wrongRuleStreakDesc') },
+                { iconNode: <ThunderboltOutlined style={{ fontSize: 16, color: '#a8a29e' }} />, label: t('wrongRuleXP'), desc: t('wrongRuleXPDesc') },
+                { iconNode: <ClockCircleOutlined style={{ fontSize: 16, color: '#a8a29e' }} />, label: t('wrongRuleTime'), desc: t('wrongRuleTimeDesc') },
+              ].map(({ iconNode, label, desc }) => (
+                <Col key={label} xs={12} sm={6}>
+                  <div style={{
+                    display: 'flex', alignItems: 'flex-start', gap: 10, padding: 12,
+                    borderRadius: 8, background: '#fafaf9',
+                  }}>
+                    <span style={{ flexShrink: 0, marginTop: 2, lineHeight: 1 }}>{iconNode}</span>
+                    <div>
+                      <Text strong style={{ fontSize: 14 }}>{label}</Text>
+                      <br />
+                      <Text type="secondary" style={{ fontSize: 11 }}>{desc}</Text>
+                    </div>
+                  </div>
+                </Col>
+              ))}
+            </Row>
+          </Card>
         </motion.div>
 
-        {/* Status */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass rounded-2xl p-6 lg:p-8 text-center">
-          <p className="text-4xl font-bold text-white mb-1">{allItems.length}</p>
-          <p className="text-sm text-gray-400">{t('wrongBossCount')}</p>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          <Card style={{ borderRadius: 16, textAlign: 'center' }}>
+            <Statistic
+              value={allItems.length}
+              valueStyle={{ fontSize: 30, fontWeight: 600, color: '#1c1917' }}
+            />
+            <Text type="secondary" style={{ fontSize: 14 }}>{t('wrongBossCount')}</Text>
+          </Card>
         </motion.div>
 
         {allItems.length > 0 ? (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex justify-center">
-            <button
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ display: 'flex', justifyContent: 'center' }}>
+            <Button
+              type="primary"
+              size="large"
+              icon={<Swords style={{ width: 20, height: 20 }} />}
               onClick={startChallenge}
-              className="flex items-center gap-3 px-10 py-4 rounded-2xl bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold text-lg hover:from-red-600 hover:to-orange-600 transition shadow-lg shadow-red-500/30"
+              style={{ background: '#1c1917', color: '#fff', border: 'none', borderRadius: 12, height: 52, paddingInline: 40, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 8 }}
             >
-              <Swords className="w-6 h-6" /> {t('wrongStartChallenge')}
-            </button>
+              {t('wrongStartChallenge')}
+            </Button>
           </motion.div>
         ) : (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
-            <Crown className="w-12 h-12 mx-auto text-yellow-400 mb-3" />
-            <p className="text-white font-medium">{t('wrongEmpty')}</p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center' }}>
+            <Crown style={{ width: 40, height: 40, color: '#d6d3d1', margin: '0 auto 12px', display: 'block' }} />
+            <Text type="secondary" style={{ fontWeight: 500, fontSize: 14 }}>{t('wrongEmpty')}</Text>
           </motion.div>
         )}
       </div>
     );
   }
 
-  // ===== BATTLE =====
+  // --------------- BATTLE ---------------
   if (phase === 'battle') {
     const item = queue[current];
-    const progress = ((current + 1) / queue.length) * 100;
+    const progressPct = ((current + 1) / queue.length) * 100;
 
     return (
-      <div className="space-y-6 lg:space-y-8">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         {/* HUD */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-4 lg:p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-3">
-              {/* HP */}
-              <div className="flex items-center gap-1">
-                {[...Array(3)].map((_, i) => (
-                  <Heart
-                    key={i}
-                    className={`w-5 h-5 transition-all duration-300 ${i < hp ? 'text-red-400 fill-red-400' : 'text-gray-600'}`}
-                  />
-                ))}
-              </div>
-              {/* Streak */}
-              {streak > 0 && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-500/20 border border-orange-500/30"
+        <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}>
+          <Card style={{ borderRadius: 16 }} styles={{ body: { padding: '16px 20px' } }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <Space size="middle">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  {[...Array(3)].map((_, i) => (
+                    <Heart
+                      key={i}
+                      style={{
+                        width: 16,
+                        height: 16,
+                        color: i < hp ? '#f87171' : '#e7e5e4',
+                        fill: i < hp ? '#f87171' : 'none',
+                        transition: 'all 0.3s',
+                      }}
+                    />
+                  ))}
+                </div>
+                {streak > 0 && (
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                    <Tag style={{ display: 'flex', alignItems: 'center', gap: 4, borderRadius: 6, margin: 0 }}>
+                      <Flame style={{ width: 12, height: 12, color: '#78716c' }} />
+                      <span style={{ fontWeight: 600 }}>x{streak}</span>
+                    </Tag>
+                  </motion.div>
+                )}
+              </Space>
+              <Space size="middle">
+                <Tag
+                  color={countdown <= 3 ? 'error' : 'default'}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 4, borderRadius: 6, margin: 0,
+                    fontWeight: 600, fontSize: 12,
+                    animation: countdown <= 3 ? 'pulse 1s infinite' : 'none',
+                  }}
                 >
-                  <Flame className="w-3.5 h-3.5 text-orange-400" />
-                  <span className="text-xs font-bold text-orange-300">×{streak}</span>
-                </motion.div>
-              )}
+                  <ClockCircleOutlined /> {countdown}s
+                </Tag>
+                <Space size={4} style={{ color: '#78716c' }}>
+                  <ThunderboltOutlined />
+                  <Text strong style={{ fontSize: 14 }}>{totalXP}</Text>
+                </Space>
+                <Text type="secondary" style={{ fontSize: 12 }}>{current + 1}/{queue.length}</Text>
+              </Space>
             </div>
-            <div className="flex items-center gap-3">
-              {/* Countdown */}
-              <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${countdown <= 3 ? 'bg-red-500/20 text-red-300 animate-pulse' : 'bg-white/10 text-gray-300'}`}>
-                <Clock className="w-3.5 h-3.5" />
-                <span>{countdown}s</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-yellow-300">
-                <Zap className="w-4 h-4" />
-                <span className="text-sm font-bold">{totalXP}</span>
-              </div>
-              <span className="text-xs text-gray-500">{current + 1}/{queue.length}</span>
-            </div>
-          </div>
-          {/* Progress bar */}
-          <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-red-500 to-orange-500"
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.5 }}
+            <Progress
+              percent={progressPct}
+              showInfo={false}
+              strokeColor="#292524"
+              trailColor="#f5f5f4"
+              size="small"
+              style={{ margin: 0 }}
             />
-          </div>
+          </Card>
         </motion.div>
 
         {/* Stage label */}
         <motion.div
           key={current}
-          initial={{ opacity: 0, x: 40 }}
+          initial={{ opacity: 0, x: 32 }}
           animate={{ opacity: 1, x: 0 }}
-          className="flex items-center gap-2"
+          style={{ display: 'flex', alignItems: 'center', gap: 8 }}
         >
-          <Shield className="w-4 h-4 text-primary-400" />
-          <span className="text-xs text-gray-500">{item.lesson_title}</span>
-          <span className="ml-auto text-xs font-mono text-gray-600">STAGE {current + 1}</span>
+          <Shield style={{ width: 14, height: 14, color: '#a8a29e' }} />
+          <Text type="secondary" style={{ fontSize: 12 }}>{item.lesson_title}</Text>
+          <Text type="secondary" style={{ fontSize: 10, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', marginLeft: 'auto' }}>
+            Stage {current + 1}
+          </Text>
         </motion.div>
 
         {/* Question Card */}
         <AnimatePresence mode="wait">
           <motion.div
             key={item.quiz_id}
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.97, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            className="glass rounded-2xl p-6 lg:p-7"
+            exit={{ opacity: 0, scale: 0.97, y: -16 }}
           >
-            <p className="text-base text-white font-medium leading-relaxed mb-5">{item.question}</p>
+            <Card style={{ borderRadius: 16 }}>
+              <Text style={{ fontSize: 14, fontWeight: 500, color: '#292524', lineHeight: 1.7, display: 'block', marginBottom: 24 }}>
+                {item.question}
+              </Text>
 
-            <div className="space-y-3">
-              {item.options.map((opt, oi) => {
-                const isCorrectOpt = oi === item.correct_answer;
-                const isSelected = oi === selected;
-                let classes = 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:border-white/20';
-                if (answered) {
-                  if (isCorrectOpt) {
-                    classes = 'bg-green-500/15 border-green-500/40 text-green-300';
-                  } else if (isSelected && !isCorrectOpt) {
-                    classes = 'bg-red-500/15 border-red-500/40 text-red-300';
-                  } else {
-                    classes = 'bg-white/3 border-white/5 text-gray-500';
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {item.options.map((opt, oi) => {
+                  const isCorrectOpt = oi === item.correct_answer;
+                  const isSelected = oi === selected;
+
+                  let borderColor = '#e7e5e4';
+                  let bgColor = '#fafaf9';
+                  let textColor = '#57534e';
+
+                  if (answered) {
+                    if (isCorrectOpt) {
+                      borderColor = '#bbf7d0';
+                      bgColor = '#f0fdf4';
+                      textColor = '#15803d';
+                    } else if (isSelected && !isCorrectOpt) {
+                      borderColor = '#fecaca';
+                      bgColor = '#fef2f2';
+                      textColor = '#dc2626';
+                    } else {
+                      borderColor = '#fafaf9';
+                      bgColor = '#fafaf9';
+                      textColor = '#d6d3d1';
+                    }
                   }
-                }
 
-                return (
-                  <motion.button
-                    key={oi}
-                    whileHover={!answered ? { scale: 1.01 } : {}}
-                    whileTap={!answered ? { scale: 0.99 } : {}}
-                    disabled={answered}
-                    onClick={() => handleSelect(oi)}
-                    className={`w-full text-left px-5 py-3.5 rounded-xl border ${classes} text-sm transition-all flex items-center gap-3`}
-                  >
-                    <span className="w-7 h-7 rounded-lg border border-current flex items-center justify-center text-xs font-bold shrink-0">
-                      {String.fromCharCode(65 + oi)}
-                    </span>
-                    <span className="flex-1">{opt}</span>
-                    {answered && isCorrectOpt && <CheckCircle className="w-5 h-5 text-green-400 shrink-0" />}
-                    {answered && isSelected && !isCorrectOpt && <XCircle className="w-5 h-5 text-red-400 shrink-0" />}
-                  </motion.button>
-                );
-              })}
-            </div>
+                  return (
+                    <motion.button
+                      key={oi}
+                      whileHover={!answered ? { scale: 1.005 } : {}}
+                      whileTap={!answered ? { scale: 0.995 } : {}}
+                      disabled={answered}
+                      onClick={() => handleSelect(oi)}
+                      style={{
+                        width: '100%',
+                        textAlign: 'left',
+                        padding: '12px 16px',
+                        borderRadius: 8,
+                        border: `1px solid ${borderColor}`,
+                        background: bgColor,
+                        color: textColor,
+                        fontSize: 14,
+                        cursor: answered ? 'default' : 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 12,
+                        transition: 'all 0.2s',
+                        outline: 'none',
+                      }}
+                    >
+                      <span style={{
+                        width: 24, height: 24, borderRadius: 6,
+                        border: '1px solid currentColor',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 11, fontWeight: 600, flexShrink: 0,
+                      }}>
+                        {String.fromCharCode(65 + oi)}
+                      </span>
+                      <span style={{ flex: 1 }}>{opt}</span>
+                      {answered && isCorrectOpt && <CheckCircleOutlined style={{ color: '#22c55e', fontSize: 16, flexShrink: 0 }} />}
+                      {answered && isSelected && !isCorrectOpt && <CloseCircleOutlined style={{ color: '#ef4444', fontSize: 16, flexShrink: 0 }} />}
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </Card>
           </motion.div>
         </AnimatePresence>
 
-        {/* Post-answer feedback */}
+        {/* Post-answer */}
         <AnimatePresence>
           {answered && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-4"
+              style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
             >
-              {/* Result banner */}
-              <div className={`flex items-center gap-3 p-4 rounded-2xl ${isCorrect ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'}`}>
-                {isCorrect ? (
-                  <>
-                    <CheckCircle className="w-6 h-6 text-green-400" />
-                    <div className="flex-1">
-                      <p className="text-sm font-bold text-green-300">{t('wrongBattleCorrect')}</p>
-                      {streak > 1 && <p className="text-xs text-green-400/70">{t('wrongStreakBonus')} ×{streak}!</p>}
+              <Alert
+                type={isCorrect ? 'success' : 'error'}
+                showIcon
+                icon={isCorrect ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
+                message={
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div>
+                      <Text strong style={{ color: isCorrect ? '#15803d' : '#dc2626' }}>
+                        {isCorrect ? t('wrongBattleCorrect') : (selected === null ? t('wrongTimeout') : t('wrongBattleWrong'))}
+                      </Text>
+                      <br />
+                      <Text type="secondary" style={{ fontSize: 12 }}>
+                        {isCorrect && streak > 1
+                          ? `${t('wrongStreakBonus')} x${streak}`
+                          : !isCorrect
+                          ? (hp <= 0 ? t('wrongGameOver') : '-1 HP')
+                          : ''}
+                      </Text>
                     </div>
-                    <span className="flex items-center gap-1 text-yellow-300 font-bold text-sm">
-                      <Zap className="w-4 h-4" />+5 XP
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <XCircle className="w-6 h-6 text-red-400" />
-                    <div className="flex-1">
-                      <p className="text-sm font-bold text-red-300">{selected === null ? t('wrongTimeout') : t('wrongBattleWrong')}</p>
-                      <p className="text-xs text-red-400/70">-1 ❤️ {hp <= 0 ? t('wrongGameOver') : ''}</p>
-                    </div>
-                  </>
-                )}
-              </div>
+                    {isCorrect && (
+                      <Tag icon={<ThunderboltOutlined />} color="default" style={{ fontWeight: 600, margin: 0 }}>
+                        +5 XP
+                      </Tag>
+                    )}
+                  </div>
+                }
+                style={{ borderRadius: 12 }}
+              />
 
-              {/* Explanation toggle */}
               {item.explanation && (
                 <>
                   {!showExplanation ? (
-                    <button
+                    <Button
+                      type="text"
+                      size="small"
+                      icon={<ReadOutlined style={{ fontSize: 12 }} />}
                       onClick={() => setShowExplanation(true)}
-                      className="text-xs text-primary-400 hover:text-primary-300 transition flex items-center gap-1"
+                      style={{ padding: 0, fontSize: 12, color: '#a8a29e', height: 'auto' }}
                     >
-                      <BookOpen className="w-3.5 h-3.5" /> {t('wrongShowExplanation')}
-                    </button>
+                      {t('wrongShowExplanation')}
+                    </Button>
                   ) : (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
-                      className="p-4 rounded-xl bg-primary-500/10 border border-primary-500/20 text-xs text-primary-200 leading-relaxed"
                     >
-                      <strong>{t('wrongExplanation')}:</strong> {item.explanation}
+                      <Card size="small" style={{ borderRadius: 8, background: '#fafaf9', border: '1px solid #f5f5f4' }}>
+                        <Text style={{ fontSize: 12, lineHeight: 1.7, color: '#57534e' }}>
+                          <Text strong style={{ color: '#44403c' }}>{t('wrongExplanation')}:</Text>{' '}
+                          {item.explanation}
+                        </Text>
+                      </Card>
                     </motion.div>
                   )}
                 </>
               )}
 
-              {/* Next button */}
-              <div className="flex justify-center">
-                <button
+              <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 4 }}>
+                <Button
+                  type="primary"
+                  size="large"
                   onClick={goNext}
-                  className="flex items-center gap-2 px-8 py-3 rounded-2xl bg-gradient-to-r from-primary-500 to-accent-500 text-white font-medium hover:from-primary-600 hover:to-accent-600 transition"
+                  style={{ background: '#1c1917', color: '#fff', border: 'none', borderRadius: 12, height: 48, paddingInline: 32, fontWeight: 500 }}
                 >
-                  {hp <= 0 && !isCorrect ? t('wrongSeeResults') : current + 1 >= queue.length && isCorrect ? t('wrongFinish') : t('wrongNextStage')}
-                  <ChevronRight className="w-5 h-5" />
-                </button>
+                  {hp <= 0 && !isCorrect
+                    ? t('wrongSeeResults')
+                    : current + 1 >= queue.length && isCorrect
+                    ? t('wrongFinish')
+                    : t('wrongNextStage')}
+                  <RightOutlined style={{ marginLeft: 8 }} />
+                </Button>
               </div>
             </motion.div>
           )}
@@ -432,93 +525,113 @@ export default function WrongAnswersPage() {
     );
   }
 
-  // ===== RESULT (game over) / VICTORY =====
+  // --------------- RESULT / VICTORY ---------------
   const isVictory = phase === 'victory';
+
   return (
-    <div className="max-w-2xl mx-auto pt-10 lg:pt-12 space-y-6 lg:space-y-8">
+    <div style={{ maxWidth: 560, margin: '0 auto', paddingTop: 48, display: 'flex', flexDirection: 'column', gap: 32 }}>
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="text-center"
+        style={{ textAlign: 'center' }}
       >
-        <div className={`w-24 h-24 mx-auto mb-5 rounded-full flex items-center justify-center ${isVictory ? 'bg-gradient-to-br from-yellow-400 to-orange-500 shadow-lg shadow-yellow-500/40' : 'bg-gradient-to-br from-gray-600 to-gray-700'}`}>
-          {isVictory ? <Crown className="w-12 h-12 text-white" /> : <Shield className="w-12 h-12 text-gray-300" />}
+        <div style={{
+          width: 80, height: 80, margin: '0 auto 24px', borderRadius: 16,
+          background: isVictory ? '#1c1917' : '#e7e5e4',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          {isVictory
+            ? <Crown style={{ width: 40, height: 40, color: 'white' }} />
+            : <Shield style={{ width: 40, height: 40, color: '#a8a29e' }} />
+          }
         </div>
-        <h1 className="text-3xl font-bold text-white">
+        <Title level={3} style={{ marginBottom: 4 }}>
           {isVictory ? t('wrongVictoryTitle') : t('wrongDefeatTitle')}
-        </h1>
-        <p className="text-gray-400 mt-1">
+        </Title>
+        <Text type="secondary" style={{ fontSize: 14 }}>
           {isVictory ? t('wrongVictoryDesc') : t('wrongDefeatDesc')}
-        </p>
+        </Text>
       </motion.div>
 
-      {/* Score card */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+      >
+        <Card style={{ borderRadius: 16 }}>
+          <Row gutter={[20, 20]} style={{ textAlign: 'center' }}>
+            <Col span={8}>
+              <Swords style={{ width: 16, height: 16, color: '#a8a29e', margin: '0 auto 4px', display: 'block' }} />
+              <Statistic
+                value={defeated.length}
+                valueStyle={{ fontSize: 20, fontWeight: 600, color: '#1c1917' }}
+              />
+              <Text type="secondary" style={{ fontSize: 11 }}>{t('wrongDefeated')}</Text>
+            </Col>
+            <Col span={8}>
+              <Flame style={{ width: 16, height: 16, color: '#a8a29e', margin: '0 auto 4px', display: 'block' }} />
+              <Statistic
+                value={bestStreak}
+                valueStyle={{ fontSize: 20, fontWeight: 600, color: '#1c1917' }}
+              />
+              <Text type="secondary" style={{ fontSize: 11 }}>{t('wrongBestStreak')}</Text>
+            </Col>
+            <Col span={8}>
+              <ThunderboltOutlined style={{ fontSize: 16, color: '#a8a29e', display: 'block', margin: '0 auto 4px' }} />
+              <Statistic
+                value={totalXP}
+                valueStyle={{ fontSize: 20, fontWeight: 600, color: '#1c1917' }}
+              />
+              <Text type="secondary" style={{ fontSize: 11 }}>XP</Text>
+            </Col>
+          </Row>
+
+          <div style={{ marginTop: 20, display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap' }}>
+            {queue.map((q, i) => {
+              const isDone = defeated.includes(q.quiz_id);
+              const isFailed = i <= current && !isDone;
+              return (
+                <div
+                  key={q.quiz_id}
+                  title={`Stage ${i + 1}`}
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: 3,
+                    transition: 'all 0.3s',
+                    background: isDone ? '#4ade80' : isFailed ? '#fca5a5' : '#f5f5f4',
+                  }}
+                />
+              );
+            })}
+          </div>
+        </Card>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="glass rounded-2xl p-6 lg:p-8"
+        style={{ display: 'flex', justifyContent: 'center', gap: 12 }}
       >
-        <div className="grid grid-cols-3 gap-4 text-center">
-          <div>
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <Swords className="w-4 h-4 text-green-400" />
-            </div>
-            <p className="text-2xl font-bold text-white">{defeated.length}</p>
-            <p className="text-xs text-gray-500">{t('wrongDefeated')}</p>
-          </div>
-          <div>
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <Flame className="w-4 h-4 text-orange-400" />
-            </div>
-            <p className="text-2xl font-bold text-white">{bestStreak}</p>
-            <p className="text-xs text-gray-500">{t('wrongBestStreak')}</p>
-          </div>
-          <div>
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <Zap className="w-4 h-4 text-yellow-400" />
-            </div>
-            <p className="text-2xl font-bold text-yellow-300">{totalXP}</p>
-            <p className="text-xs text-gray-500">XP</p>
-          </div>
-        </div>
-
-        {/* Stage progress */}
-        <div className="mt-5 flex gap-1 justify-center flex-wrap">
-          {queue.map((q, i) => {
-            const isDone = defeated.includes(q.quiz_id);
-            const isFailed = i <= current && !isDone;
-            return (
-              <div
-                key={q.quiz_id}
-                className={`w-4 h-4 rounded-sm transition-all ${isDone ? 'bg-green-500' : isFailed ? 'bg-red-500/60' : 'bg-white/10'}`}
-                title={`Stage ${i + 1}`}
-              />
-            );
-          })}
-        </div>
-      </motion.div>
-
-      {/* Buttons */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="flex justify-center gap-3"
-      >
-        <button
+        <Button
+          size="large"
+          icon={<ReloadOutlined />}
           onClick={() => { fetchItems(); setPhase('lobby'); }}
-          className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/10 text-white font-medium hover:bg-white/20 transition"
+          style={{ background: '#f5f5f4', color: '#57534e', border: 'none', borderRadius: 12, height: 48, paddingInline: 24, fontWeight: 500 }}
         >
-          <RotateCcw className="w-4 h-4" /> {t('wrongBackToLobby')}
-        </button>
+          {t('wrongBackToLobby')}
+        </Button>
         {!isVictory && allItems.length > 0 && (
-          <button
+          <Button
+            type="primary"
+            size="large"
+            icon={<Swords style={{ width: 14, height: 14 }} />}
             onClick={startChallenge}
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-red-500 to-orange-500 text-white font-medium hover:from-red-600 hover:to-orange-600 transition"
+            style={{ background: '#1c1917', color: '#fff', border: 'none', borderRadius: 12, height: 48, paddingInline: 24, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6 }}
           >
-            <Swords className="w-4 h-4" /> {t('wrongRetryChallenge')}
-          </button>
+            {t('wrongRetryChallenge')}
+          </Button>
         )}
       </motion.div>
     </div>

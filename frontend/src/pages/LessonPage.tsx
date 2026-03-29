@@ -2,15 +2,26 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ArrowLeft, CheckCircle, XCircle, Lightbulb, Sparkles,
-  ChevronRight, Star, Zap, Award, Clock,
-} from 'lucide-react';
+  ArrowLeftOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  BulbOutlined,
+  StarOutlined,
+  ThunderboltOutlined,
+  RightOutlined,
+  TrophyOutlined,
+  ClockCircleOutlined,
+} from '@ant-design/icons';
+import { Sparkles } from 'lucide-react';
+import { Card, Button, Alert, Result, Space, Typography, Tag, Spin, Rate, Progress, Steps } from 'antd';
 import ReactMarkdown from 'react-markdown';
 import api from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import { useI18n } from '../i18n';
 import { toast } from '../components/Toast';
 import type { Lesson, Quiz, QuizResult } from '../types';
+
+const { Title, Text, Paragraph } = Typography;
 
 export default function LessonPage() {
   const { id } = useParams();
@@ -46,7 +57,7 @@ export default function LessonPage() {
       }
       if (res.data.new_achievements?.length) {
         res.data.new_achievements.forEach((a: any) => {
-          toast({ type: 'achievement', title: `🏆 ${a.name}`, message: a.description });
+          toast({ type: 'achievement', title: a.name, message: a.description });
         });
       }
       await refreshUser();
@@ -78,7 +89,7 @@ export default function LessonPage() {
       }
       if (res.data.achievements_earned?.length) {
         res.data.achievements_earned.forEach((a: any) => {
-          toast({ type: 'achievement', title: `🏆 ${a.name}`, message: a.description });
+          toast({ type: 'achievement', title: a.name, message: a.description });
         });
       }
       await refreshUser();
@@ -97,54 +108,76 @@ export default function LessonPage() {
     }
   };
 
+  const phaseIndex = ['reading', 'quiz', 'complete'].indexOf(phase);
+
   if (loading || !lesson) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-10 h-10 border-4 border-primary-500 border-t-transparent rounded-full spinner" />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 256 }}>
+        <Spin size="large" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 lg:space-y-10">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-4">
-        <Link to="/courses" className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition text-gray-400 hover:text-white">
-          <ArrowLeft className="w-5 h-5" />
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        style={{ display: 'flex', alignItems: 'center', gap: 16 }}
+      >
+        <Link to="/courses">
+          <Button type="text" icon={<ArrowLeftOutlined />} />
         </Link>
-        <div className="flex-1">
-          <h1 className="text-xl font-bold text-white">{lesson.title}</h1>
-          <div className="flex items-center gap-3 text-sm text-gray-400">
-            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{lesson.estimated_minutes} min</span>
-            <span className="flex items-center gap-1"><Star className="w-3.5 h-3.5" />{lesson.xp_reward} XP</span>
-            {quizzes.length > 0 && <span>{quizzes.length} {t('lessonQuizQuestions')}</span>}
-          </div>
+        <div style={{ flex: 1 }}>
+          <Title level={4} style={{ margin: 0 }}>{lesson.title}</Title>
+          <Space size="middle" style={{ marginTop: 4 }}>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              <ClockCircleOutlined style={{ marginRight: 4 }} />
+              {lesson.estimated_minutes} min
+            </Text>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              <StarOutlined style={{ marginRight: 4 }} />
+              {lesson.xp_reward} XP
+            </Text>
+            {quizzes.length > 0 && (
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                {quizzes.length} {t('lessonQuizQuestions')}
+              </Text>
+            )}
+          </Space>
         </div>
-        {/* Progress indicator */}
-        <div className="flex items-center gap-1">
-          {['reading', 'quiz', 'complete'].map((p, i) => (
-            <div
-              key={p}
-              className={`w-8 h-1.5 rounded-full transition-all ${
-                i <= ['reading', 'quiz', 'complete'].indexOf(phase)
-                  ? 'bg-primary-500'
-                  : 'bg-white/10'
-              }`}
-            />
-          ))}
-        </div>
+        <Steps
+          size="small"
+          current={phaseIndex}
+          style={{ maxWidth: 320 }}
+          items={[
+            { title: t('lessonQuestion') || 'Reading' },
+            { title: t('lessonQuizQuestions') || 'Quiz' },
+            { title: t('lessonComplete') || 'Complete' },
+          ]}
+        />
       </motion.div>
 
       {/* AI Mode indicator */}
       {user?.ai_mode_enabled && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex items-center gap-2 p-3 rounded-xl bg-primary-500/10 border border-primary-500/20 text-sm text-primary-300"
-        >
-          <Sparkles className="w-4 h-4" />
-          AI Assistance is <strong>{t('lessonAIOnLabel')}</strong> — You'll receive hints during quizzes
-          {phase === 'quiz' && <span className="text-xs text-gray-400 ml-2">{t('lessonAIHintBonus')}</span>}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <Alert
+            type="info"
+            showIcon
+            icon={<Sparkles style={{ width: 16, height: 16 }} />}
+            message={
+              <span>
+                AI Assistance is <strong>{t('lessonAIOnLabel')}</strong>
+                {phase === 'quiz' && (
+                  <Text type="secondary" style={{ marginLeft: 8, fontSize: 12 }}>
+                    {t('lessonAIHintBonus')}
+                  </Text>
+                )}
+              </span>
+            }
+            style={{ borderRadius: 8 }}
+          />
         </motion.div>
       )}
 
@@ -153,24 +186,30 @@ export default function LessonPage() {
         {phase === 'reading' && (
           <motion.div
             key="reading"
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 16 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="glass rounded-2xl p-8 lg:p-10"
+            exit={{ opacity: 0, x: -16 }}
           >
-            <div className="lesson-content">
-              <ReactMarkdown>{lesson.content}</ReactMarkdown>
-            </div>
+            <Card
+              style={{ borderRadius: 16 }}
+              styles={{ body: { padding: 40 } }}
+            >
+              <div className="lesson-content">
+                <ReactMarkdown>{lesson.content}</ReactMarkdown>
+              </div>
 
-            <div className="mt-8 flex justify-end">
-              <button
-                onClick={handleCompleteLesson}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold flex items-center gap-2 hover:from-primary-600 hover:to-accent-600 transition-all glow-primary"
-              >
-                {quizzes.length > 0 ? t('lessonCompleteAndQuiz') : t('lessonCompleteLesson')}
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
+              <div style={{ marginTop: 40, display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  type="primary"
+                  size="large"
+                  onClick={handleCompleteLesson}
+                  icon={<RightOutlined />}
+                  iconPosition="end"
+                >
+                  {quizzes.length > 0 ? t('lessonCompleteAndQuiz') : t('lessonCompleteLesson')}
+                </Button>
+              </div>
+            </Card>
           </motion.div>
         )}
 
@@ -178,70 +217,116 @@ export default function LessonPage() {
         {phase === 'quiz' && quizzes[currentQuiz] && (
           <motion.div
             key={`quiz-${currentQuiz}`}
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 16 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-4"
+            exit={{ opacity: 0, x: -16 }}
+            style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
           >
             {/* Quiz progress */}
-            <div className="flex items-center gap-2 text-sm text-gray-400">
-              <span>{t('lessonQuestion')} {currentQuiz + 1} {t('lessonQuestionOf')} {quizzes.length}{t('lessonQuestionTotal')}</span>
-              <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary-500 rounded-full transition-all"
-                  style={{ width: `${((currentQuiz + 1) / quizzes.length) * 100}%` }}
-                />
-              </div>
-              <div className="flex items-center gap-1 text-xs">
-                {[...Array(3)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-3.5 h-3.5 ${i < quizzes[currentQuiz].difficulty ? 'text-yellow-400 fill-yellow-400' : 'text-gray-600'}`}
-                  />
-                ))}
-              </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <Text type="secondary" style={{ fontSize: 12, whiteSpace: 'nowrap' }}>
+                {t('lessonQuestion')} {currentQuiz + 1} {t('lessonQuestionOf')} {quizzes.length}{t('lessonQuestionTotal')}
+              </Text>
+              <Progress
+                percent={((currentQuiz + 1) / quizzes.length) * 100}
+                showInfo={false}
+                strokeColor="#292524"
+                trailColor="#f5f5f4"
+                size="small"
+                style={{ flex: 1, margin: 0 }}
+              />
+              <Rate
+                disabled
+                count={3}
+                value={quizzes[currentQuiz].difficulty}
+                character={<StarOutlined />}
+                style={{ fontSize: 12 }}
+              />
             </div>
 
-            <div className="glass rounded-2xl p-6 lg:p-8">
-              <h2 className="text-lg font-semibold text-white mb-6 lg:mb-8">{quizzes[currentQuiz].question}</h2>
+            <Card style={{ borderRadius: 16 }} styles={{ body: { padding: 28 } }}>
+              <Title level={5} style={{ marginBottom: 28 }}>
+                {quizzes[currentQuiz].question}
+              </Title>
 
-              <div className="space-y-3.5 lg:space-y-4">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {quizzes[currentQuiz].options.map((opt: string, i: number) => {
-                  let cls = 'quiz-option p-4 rounded-xl border border-white/10 cursor-pointer';
+                  let cls = 'quiz-option';
                   if (quizResult) {
                     if (i === quizResult.correct_answer) cls += ' correct';
                     else if (i === selectedAnswer && !quizResult.is_correct) cls += ' incorrect';
-                    else cls += ' opacity-50';
-                  } else if (i === selectedAnswer) {
-                    cls += ' bg-primary-500/20 border-primary-500/40';
                   }
+
+                  const isSelected = i === selectedAnswer;
+                  const isCorrectAnswer = quizResult && i === quizResult.correct_answer;
+                  const isWrongSelected = quizResult && i === selectedAnswer && !quizResult.is_correct;
+                  const isDimmed = quizResult && !isCorrectAnswer && !isWrongSelected;
 
                   return (
                     <motion.button
                       key={i}
-                      whileHover={!quizResult ? { scale: 1.01 } : {}}
-                      whileTap={!quizResult ? { scale: 0.99 } : {}}
+                      whileHover={!quizResult ? { scale: 1.005 } : {}}
+                      whileTap={!quizResult ? { scale: 0.995 } : {}}
                       onClick={() => !quizResult && setSelectedAnswer(i)}
-                      className={`${cls} w-full text-left flex items-center gap-4`}
+                      className={cls}
                       disabled={!!quizResult}
+                      style={{
+                        width: '100%',
+                        textAlign: 'left',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 12,
+                        padding: 16,
+                        borderRadius: 8,
+                        border: `1px solid ${
+                          isCorrectAnswer ? '#bbf7d0' : isWrongSelected ? '#fecaca' : isSelected && !quizResult ? '#a8a29e' : '#f5f5f4'
+                        }`,
+                        background: isCorrectAnswer
+                          ? '#f0fdf4'
+                          : isWrongSelected
+                          ? '#fef2f2'
+                          : isSelected && !quizResult
+                          ? '#fafaf9'
+                          : '#fff',
+                        cursor: quizResult ? 'default' : 'pointer',
+                        opacity: isDimmed ? 0.4 : 1,
+                        transition: 'all 0.2s',
+                      }}
                     >
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
-                        quizResult && i === quizResult.correct_answer
-                          ? 'bg-green-500/30 text-green-400'
-                          : quizResult && i === selectedAnswer && !quizResult.is_correct
-                          ? 'bg-red-500/30 text-red-400'
-                          : i === selectedAnswer
-                          ? 'bg-primary-500/30 text-primary-400'
-                          : 'bg-white/10 text-gray-400'
-                      }`}>
+                      <div
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: 6,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 12,
+                          fontWeight: 600,
+                          background: isCorrectAnswer
+                            ? '#dcfce7'
+                            : isWrongSelected
+                            ? '#fee2e2'
+                            : isSelected
+                            ? '#e7e5e4'
+                            : '#fafaf9',
+                          color: isCorrectAnswer
+                            ? '#16a34a'
+                            : isWrongSelected
+                            ? '#ef4444'
+                            : isSelected
+                            ? '#44403c'
+                            : '#a8a29e',
+                        }}
+                      >
                         {String.fromCharCode(65 + i)}
                       </div>
-                      <span className="text-gray-200">{opt}</span>
-                      {quizResult && i === quizResult.correct_answer && (
-                        <CheckCircle className="w-5 h-5 text-green-400 ml-auto" />
+                      <span style={{ fontSize: 14, color: '#57534e', flex: 1 }}>{opt}</span>
+                      {isCorrectAnswer && (
+                        <CheckCircleOutlined style={{ color: '#22c55e', fontSize: 16 }} />
                       )}
-                      {quizResult && i === selectedAnswer && !quizResult.is_correct && (
-                        <XCircle className="w-5 h-5 text-red-400 ml-auto" />
+                      {isWrongSelected && (
+                        <CloseCircleOutlined style={{ color: '#f87171', fontSize: 16 }} />
                       )}
                     </motion.button>
                   );
@@ -250,24 +335,37 @@ export default function LessonPage() {
 
               {/* AI Hint */}
               {user?.ai_mode_enabled && quizzes[currentQuiz].ai_hint && !quizResult && (
-                <div className="mt-4">
+                <div style={{ marginTop: 16 }}>
                   {!showHint ? (
-                    <button
+                    <Button
+                      type="link"
+                      icon={<BulbOutlined />}
                       onClick={() => setShowHint(true)}
-                      className="flex items-center gap-2 text-sm text-primary-400 hover:text-primary-300 transition"
+                      style={{ padding: 0, color: '#a8a29e' }}
                     >
-                      <Lightbulb className="w-4 h-4" /> {t('lessonShowHint')}
-                    </button>
+                      {t('lessonShowHint')}
+                    </Button>
                   ) : (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
-                      className="p-4 rounded-xl bg-primary-500/10 border border-primary-500/20"
                     >
-                      <div className="flex items-center gap-2 text-sm text-primary-300 mb-1">
-                        <Sparkles className="w-4 h-4" /> {t('lessonAIHint')}
-                      </div>
-                      <p className="text-sm text-gray-300">{quizzes[currentQuiz].ai_hint}</p>
+                      <Alert
+                        type="info"
+                        icon={<Sparkles style={{ width: 14, height: 14 }} />}
+                        showIcon
+                        message={
+                          <Text type="secondary" style={{ fontSize: 12 }}>
+                            {t('lessonAIHint')}
+                          </Text>
+                        }
+                        description={
+                          <Text style={{ fontSize: 14 }}>
+                            {quizzes[currentQuiz].ai_hint}
+                          </Text>
+                        }
+                        style={{ borderRadius: 8, background: '#fafaf9', borderColor: '#f5f5f4' }}
+                      />
                     </motion.div>
                   )}
                 </div>
@@ -278,50 +376,47 @@ export default function LessonPage() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`mt-6 p-4 rounded-xl border ${
-                    quizResult.is_correct
-                      ? 'bg-green-500/10 border-green-500/30'
-                      : 'bg-red-500/10 border-red-500/30'
-                  }`}
+                  style={{ marginTop: 24 }}
                 >
-                  <div className="flex items-center gap-2 mb-2">
-                    {quizResult.is_correct ? (
-                      <>
-                        <CheckCircle className="w-5 h-5 text-green-400" />
-                        <span className="font-semibold text-green-400">{t('lessonCorrect')} +{quizResult.xp_earned} XP</span>
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="w-5 h-5 text-red-400" />
-                        <span className="font-semibold text-red-400">{t('lessonIncorrect')}</span>
-                      </>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-300">{quizResult.explanation}</p>
+                  <Alert
+                    type={quizResult.is_correct ? 'success' : 'error'}
+                    showIcon
+                    icon={quizResult.is_correct ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
+                    message={
+                      quizResult.is_correct
+                        ? `${t('lessonCorrect')} +${quizResult.xp_earned} XP`
+                        : t('lessonIncorrect')
+                    }
+                    description={quizResult.explanation}
+                    style={{ borderRadius: 8 }}
+                  />
                 </motion.div>
               )}
 
               {/* Actions */}
-              <div className="mt-6 flex justify-between items-center">
+              <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
                 {!quizResult ? (
-                  <button
+                  <Button
+                    type="primary"
+                    size="large"
                     onClick={handleSubmitQuiz}
                     disabled={selectedAnswer === null}
-                    className="ml-auto px-6 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold disabled:opacity-40 hover:from-primary-600 hover:to-primary-700 transition-all"
                   >
                     {t('lessonSubmitAnswer')}
-                  </button>
+                  </Button>
                 ) : (
-                  <button
+                  <Button
+                    type="primary"
+                    size="large"
                     onClick={handleNextQuiz}
-                    className="ml-auto px-6 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold flex items-center gap-2 hover:from-primary-600 hover:to-accent-600 transition-all"
+                    icon={<RightOutlined />}
+                    iconPosition="end"
                   >
                     {currentQuiz < quizzes.length - 1 ? t('lessonNextQuestion') : t('lessonSeeResults')}
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
+                  </Button>
                 )}
               </div>
-            </div>
+            </Card>
           </motion.div>
         )}
 
@@ -329,55 +424,67 @@ export default function LessonPage() {
         {phase === 'complete' && (
           <motion.div
             key="complete"
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: 'spring', stiffness: 200 }}
-            className="glass rounded-2xl p-8 lg:p-10 text-center"
           >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-              className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center glow-success"
-            >
-              <Award className="w-10 h-10 text-white" />
-            </motion.div>
-
-            <h2 className="text-2xl font-bold text-white mb-2">{t('lessonComplete')}</h2>
-            <p className="text-gray-400 mb-6">{lesson.title}</p>
-
-            <div className="flex justify-center gap-6 mb-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-yellow-400 flex items-center gap-1 justify-center">
-                  <Zap className="w-6 h-6" />
-                  {totalXpEarned}
-                </div>
-                <p className="text-xs text-gray-400 mt-1">{t('lessonXPEarned')}</p>
-              </div>
-              {quizzes.length > 0 && (
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-400">
-                    {correctCount}/{quizzes.length}
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1">{t('lessonQuizScore')}</p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex justify-center gap-3">
-              <Link
-                to="/courses"
-                className="px-5 py-2.5 rounded-xl bg-white/10 text-gray-300 hover:bg-white/15 transition"
-              >
-                {t('lessonBackToCourses2')}
-              </Link>
-              <Link
-                to="/"
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500 text-white font-medium hover:from-primary-600 hover:to-accent-600 transition-all"
-              >
-                {t('lessonDashboard')}
-              </Link>
-            </div>
+            <Card style={{ borderRadius: 16, textAlign: 'center' }} styles={{ body: { padding: 48 } }}>
+              <Result
+                icon={
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+                  >
+                    <div
+                      style={{
+                        width: 64,
+                        height: 64,
+                        margin: '0 auto',
+                        borderRadius: 12,
+                        background: '#292524',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <TrophyOutlined style={{ fontSize: 32, color: '#fff' }} />
+                    </div>
+                  </motion.div>
+                }
+                title={t('lessonComplete')}
+                subTitle={lesson.title}
+                extra={
+                  <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                    <Space size={48} style={{ justifyContent: 'center', width: '100%' }}>
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: 28, fontWeight: 600, color: '#1c1917', display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}>
+                          <ThunderboltOutlined style={{ fontSize: 20, color: '#a8a29e' }} />
+                          {totalXpEarned}
+                        </div>
+                        <Text type="secondary" style={{ fontSize: 12 }}>{t('lessonXPEarned')}</Text>
+                      </div>
+                      {quizzes.length > 0 && (
+                        <div style={{ textAlign: 'center' }}>
+                          <div style={{ fontSize: 28, fontWeight: 600, color: '#1c1917' }}>
+                            {correctCount}/{quizzes.length}
+                          </div>
+                          <Text type="secondary" style={{ fontSize: 12 }}>{t('lessonQuizScore')}</Text>
+                        </div>
+                      )}
+                    </Space>
+                    <Space>
+                      <Link to="/courses">
+                        <Button size="large">{t('lessonBackToCourses2')}</Button>
+                      </Link>
+                      <Link to="/">
+                        <Button type="primary" size="large">{t('lessonDashboard')}</Button>
+                      </Link>
+                    </Space>
+                  </Space>
+                }
+              />
+            </Card>
           </motion.div>
         )}
       </AnimatePresence>

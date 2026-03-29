@@ -1,9 +1,33 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Timer, Play, Pause, RotateCcw, Zap, Coffee, Flame, BarChart3 } from 'lucide-react';
+import {
+  Card,
+  Progress,
+  Statistic,
+  Button,
+  Radio,
+  Typography,
+  Space,
+  Row,
+  Col,
+  List,
+  Tag,
+} from 'antd';
+import {
+  ClockCircleOutlined,
+  PlayCircleOutlined,
+  PauseCircleOutlined,
+  UndoOutlined,
+  ThunderboltOutlined,
+  FireOutlined,
+  BarChartOutlined,
+  CheckCircleOutlined,
+} from '@ant-design/icons';
 import api from '../services/api';
 import { useI18n } from '../i18n';
 import type { FocusSession } from '../types';
+
+const { Title, Text } = Typography;
 
 const PRESETS = [15, 25, 45, 60];
 
@@ -13,7 +37,17 @@ export default function FocusTimerPage() {
   const [running, setRunning] = useState(false);
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [sessions, setSessions] = useState<FocusSession[]>([]);
-  const [stats, setStats] = useState<any>({ total_minutes: 0, total_sessions: 0, total_xp: 0, today_minutes: 0, weekly_data: [], avg_duration: 0, focus_streak: 0, distribution: {}, week_minutes: 0 });
+  const [stats, setStats] = useState<any>({
+    total_minutes: 0,
+    total_sessions: 0,
+    total_xp: 0,
+    today_minutes: 0,
+    weekly_data: [],
+    avg_duration: 0,
+    focus_streak: 0,
+    distribution: {},
+    week_minutes: 0,
+  });
   const [justEarned, setJustEarned] = useState<number | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { t } = useI18n();
@@ -23,13 +57,17 @@ export default function FocusTimerPage() {
     api.get('/focus-sessions/stats').then((r) => setStats(r.data));
   }, []);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   useEffect(() => {
     if (running && secondsLeft > 0) {
       intervalRef.current = setInterval(() => setSecondsLeft((s) => s - 1), 1000);
     }
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
   }, [running, secondsLeft]);
 
   useEffect(() => {
@@ -71,217 +109,310 @@ export default function FocusTimerPage() {
 
   const mins = Math.floor(secondsLeft / 60);
   const secs = secondsLeft % 60;
-  const progress = sessionId ? 1 - secondsLeft / (duration * 60) : 0;
-  const circumference = 2 * Math.PI * 120;
+  const progress = sessionId ? ((1 - secondsLeft / (duration * 60)) * 100) : 0;
+  const timeDisplay = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 
   return (
-    <div className="space-y-8 lg:space-y-10">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl lg:text-3xl font-bold text-white flex items-center gap-2">
-          <Timer className="w-7 h-7 text-primary-400" /> {t('focusTitle')}
-        </h1>
-        <p className="text-gray-400 mt-1">{t('focusSubtitle')}</p>
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+        <Title level={3} style={{ marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <ClockCircleOutlined style={{ fontSize: 20, color: '#a8a29e' }} /> {t('focusTitle')}
+        </Title>
+        <Text type="secondary" style={{ fontSize: 14 }}>{t('focusSubtitle')}</Text>
       </motion.div>
 
       {/* XP notification */}
       {justEarned !== null && (
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
-          className="flex items-center justify-center gap-2 text-yellow-300 font-medium"
+          style={{ textAlign: 'center' }}
         >
-          <Zap className="w-5 h-5" /> +{justEarned} XP!
+          <Tag icon={<ThunderboltOutlined />} color="default" style={{ fontSize: 14, padding: '4px 12px' }}>
+            +{justEarned} XP
+          </Tag>
         </motion.div>
       )}
 
-      {/* Timer + Controls centered section */}
-      <div className="flex flex-col items-center">
-        {/* Timer circle */}
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center">
-          <div className="relative w-72 h-72">
-            <svg className="w-full h-full -rotate-90" viewBox="0 0 260 260">
-              <circle cx="130" cy="130" r="120" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-              <circle
-                cx="130"
-                cy="130"
-                r="120"
-                fill="none"
-                stroke="url(#grad)"
-                strokeWidth="8"
-                strokeLinecap="round"
-                strokeDasharray={circumference}
-                strokeDashoffset={circumference * (1 - progress)}
-                className="transition-[stroke-dashoffset] duration-1000 ease-linear"
-              />
-              <defs>
-                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#a855f7" />
-                  <stop offset="100%" stopColor="#ec4899" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-5xl font-mono font-bold text-white tabular-nums">
-                {String(mins).padStart(2, '0')}:{String(secs).padStart(2, '0')}
-              </span>
-              <span className="text-xs text-gray-500 mt-1">{duration} {t('focusMin')}</span>
-            </div>
-          </div>
+      {/* Timer */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 0' }}>
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+          <Progress
+            type="circle"
+            percent={progress}
+            size={260}
+            strokeColor="#292524"
+            trailColor="rgba(0,0,0,0.04)"
+            strokeWidth={3}
+            format={() => (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={{
+                  fontSize: 36,
+                  fontFamily: 'ui-monospace, SFMono-Regular, monospace',
+                  fontWeight: 600,
+                  color: '#1c1917',
+                  letterSpacing: '-0.02em',
+                  fontVariantNumeric: 'tabular-nums',
+                }}>
+                  {timeDisplay}
+                </span>
+                <span style={{ fontSize: 11, color: '#a8a29e', marginTop: 4 }}>
+                  {duration} {t('focusMin')}
+                </span>
+              </div>
+            )}
+          />
         </motion.div>
 
         {/* Duration presets */}
-        <div className="flex justify-center gap-3 mt-6">
-          {PRESETS.map((m) => (
-            <button
-              key={m}
-              onClick={() => selectDuration(m)}
-              disabled={running}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-                duration === m
-                  ? 'bg-primary-500/30 border border-primary-500/50 text-primary-300'
-                  : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10'
-              } disabled:cursor-not-allowed`}
-            >
-              {m} {t('focusMin')}
-            </button>
-          ))}
+        <div style={{ marginTop: 28 }}>
+          <Radio.Group
+            value={duration}
+            onChange={(e) => selectDuration(e.target.value)}
+            disabled={running}
+            optionType="button"
+            buttonStyle="solid"
+          >
+            {PRESETS.map((m) => (
+              <Radio.Button key={m} value={m}>
+                {m} {t('focusMin')}
+              </Radio.Button>
+            ))}
+          </Radio.Group>
         </div>
 
         {/* Controls */}
-        <div className="flex justify-center gap-4 mt-5">
+        <Space size="middle" style={{ marginTop: 24 }}>
           {!sessionId ? (
-            <button
+            <Button
+              type="primary"
+              size="large"
+              icon={<PlayCircleOutlined />}
               onClick={startTimer}
-              className="flex items-center gap-2 px-8 py-3 rounded-2xl bg-gradient-to-r from-primary-500 to-accent-500 text-white font-medium hover:from-primary-600 hover:to-accent-600 transition shadow-lg shadow-primary-500/25"
+              style={{ borderRadius: 12, height: 48, paddingInline: 32, fontWeight: 500 }}
             >
-              <Play className="w-5 h-5" /> {t('focusStart')}
-            </button>
+              {t('focusStart')}
+            </Button>
           ) : (
             <>
-              <button
+              <Button
+                size="large"
+                icon={running ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
                 onClick={togglePause}
-                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/10 text-white font-medium hover:bg-white/20 transition"
+                style={{ borderRadius: 12, height: 48, paddingInline: 24, fontWeight: 500 }}
               >
-                {running ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
                 {running ? t('focusPause') : t('focusResume')}
-              </button>
-              <button
+              </Button>
+              <Button
+                size="large"
+                icon={<UndoOutlined />}
                 onClick={resetTimer}
-                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/5 text-gray-400 hover:bg-white/10 transition"
+                style={{ borderRadius: 12, height: 48, paddingInline: 24 }}
               >
-                <RotateCcw className="w-4 h-4" /> {t('focusReset')}
-              </button>
+                {t('focusReset')}
+              </Button>
             </>
           )}
-        </div>
+        </Space>
       </div>
 
       {/* Stats */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-        {[
-          { label: t('focusToday'), value: `${stats.today_minutes}m`, icon: Coffee },
-          { label: t('focusTotalMin'), value: `${stats.total_minutes}m`, icon: Timer },
-          { label: t('focusSessions'), value: stats.total_sessions, icon: Zap },
-          { label: t('focusStreak'), value: `${stats.focus_streak}d`, icon: Flame },
-        ].map((s, i) => (
-          <div key={i} className="glass rounded-xl p-5 lg:p-6 text-center">
-            <s.icon className="w-5 h-5 mx-auto text-primary-400 mb-2" />
-            <p className="text-xl font-bold text-white">{s.value}</p>
-            <p className="text-xs text-gray-500 mt-1">{s.label}</p>
-          </div>
-        ))}
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <Row gutter={[24, 24]}>
+          {[
+            { title: t('focusToday'), value: stats.today_minutes, suffix: 'm', icon: <ClockCircleOutlined /> },
+            { title: t('focusTotalMin'), value: stats.total_minutes, suffix: 'm', icon: <ClockCircleOutlined /> },
+            { title: t('focusSessions'), value: stats.total_sessions, icon: <ThunderboltOutlined /> },
+            { title: t('focusStreak'), value: stats.focus_streak, suffix: 'd', icon: <FireOutlined /> },
+          ].map((s, i) => (
+            <Col key={i} xs={12} lg={6}>
+              <Card bordered={false} className="glass" style={{ borderRadius: 16, textAlign: 'center', padding: '8px 0' }}>
+                <Statistic
+                  title={<Text type="secondary" style={{ fontSize: 11 }}>{s.title}</Text>}
+                  value={s.value}
+                  suffix={s.suffix}
+                  prefix={s.icon}
+                  valueStyle={{ fontSize: 24, fontWeight: 600, color: '#1c1917' }}
+                />
+              </Card>
+            </Col>
+          ))}
+        </Row>
       </motion.div>
 
       {/* Weekly Chart */}
       {stats.weekly_data && stats.weekly_data.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="glass rounded-2xl p-6 lg:p-8">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-sm font-medium text-gray-400 flex items-center gap-2">
-              <BarChart3 className="w-4 h-4" /> {t('focusWeeklyChart')}
-            </h2>
-            <span className="text-xs text-gray-500">{stats.week_minutes} min {t('focusThisWeek')}</span>
-          </div>
-          <div className="flex items-end gap-3" style={{ height: '140px' }}>
-            {stats.weekly_data.map((d: any, i: number) => {
-              const maxMins = Math.max(...stats.weekly_data.map((w: any) => w.minutes), 1);
-              const barH = Math.max(Math.round((d.minutes / maxMins) * 100), 4);
-              const isToday = i === stats.weekly_data.length - 1;
-              return (
-                <div key={i} className="flex-1 flex flex-col items-center justify-end gap-1.5" style={{ height: '100%' }}>
-                  <span className="text-[11px] text-gray-500">{d.minutes > 0 ? `${d.minutes}m` : ''}</span>
-                  <div
-                    className={`w-full max-w-[60px] rounded-t transition-all ${isToday ? 'bg-gradient-to-t from-primary-500 to-accent-500' : 'bg-gradient-to-t from-emerald-600 to-teal-500'}`}
-                    style={{ height: `${barH}px` }}
-                  />
-                  <span className={`text-[11px] ${isToday ? 'text-primary-400 font-bold' : 'text-gray-600'}`}>{d.weekday}</span>
-                </div>
-              );
-            })}
-          </div>
-        </motion.div>
-      )}
-
-      {/* Duration Distribution + Avg */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }} className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6">
-        {/* Distribution */}
-        {stats.distribution && (
-          <div className="glass rounded-2xl p-6 lg:p-7">
-            <h2 className="text-sm font-medium text-gray-400 mb-4">{t('focusDistribution')}</h2>
-            <div className="space-y-3">
-              {[{k:'15', label:'15 min'},{k:'25', label:'25 min'},{k:'45', label:'45 min'},{k:'60', label:'60 min'}].map(({k, label}) => {
-                const count = stats.distribution[k] || 0;
-                const maxCount = Math.max(...Object.values(stats.distribution).map((v: any) => v as number), 1);
-                const pct = (count / maxCount) * 100;
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
+          <Card
+            bordered={false}
+            className="glass"
+            style={{ borderRadius: 16 }}
+            title={
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Text style={{ fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }} type="secondary">
+                  <BarChartOutlined style={{ marginRight: 8 }} />
+                  {t('focusWeeklyChart')}
+                </Text>
+                <Text type="secondary" style={{ fontSize: 12 }}>{stats.week_minutes} min {t('focusThisWeek')}</Text>
+              </div>
+            }
+          >
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 120 }}>
+              {stats.weekly_data.map((d: any, i: number) => {
+                const maxMins = Math.max(...stats.weekly_data.map((w: any) => w.minutes), 1);
+                const barH = Math.max(Math.round((d.minutes / maxMins) * 88), 3);
+                const isToday = i === stats.weekly_data.length - 1;
                 return (
-                  <div key={k} className="flex items-center gap-3">
-                    <span className="text-xs text-gray-500 w-14">{label}</span>
-                    <div className="flex-1 h-3.5 bg-white/5 rounded-full overflow-hidden">
-                      <div className="h-full rounded-full bg-gradient-to-r from-primary-500 to-accent-500 transition-all" style={{ width: `${Math.max(pct, 3)}%` }} />
+                  <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 6, height: '100%' }}>
+                    <span style={{ fontSize: 10, color: '#a8a29e' }}>{d.minutes > 0 ? `${d.minutes}m` : ''}</span>
+                    <div style={{ width: '100%', maxWidth: 48, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: 0, borderRadius: 3, background: '#fafaf9' }}>
+                      <div
+                        style={{
+                          width: '100%',
+                          borderRadius: 3,
+                          background: isToday ? '#292524' : '#d6d3d1',
+                          height: barH,
+                          transition: 'all 0.3s',
+                        }}
+                      />
                     </div>
-                    <span className="text-xs font-bold text-gray-400 w-6 text-right">{count}</span>
+                    <span style={{
+                      fontSize: 10,
+                      color: isToday ? '#292524' : '#a8a29e',
+                      fontWeight: isToday ? 600 : 400,
+                    }}>
+                      {d.weekday}
+                    </span>
                   </div>
                 );
               })}
             </div>
-          </div>
-        )}
+          </Card>
+        </motion.div>
+      )}
 
-        {/* Quick stats */}
-        <div className="glass rounded-2xl p-6 lg:p-7 flex flex-col justify-center space-y-5">
-          <div className="text-center">
-            <p className="text-xs text-gray-500 mb-1">{t('focusAvgDuration')}</p>
-            <p className="text-3xl font-bold text-white">{stats.avg_duration}<span className="text-sm text-gray-500 ml-1">min</span></p>
-          </div>
-          <div className="text-center">
-            <p className="text-xs text-gray-500 mb-1">{t('focusTotalXP')}</p>
-            <p className="text-2xl font-bold text-yellow-300 flex items-center justify-center gap-1">
-              <Zap className="w-5 h-5" />{stats.total_xp}
-            </p>
-          </div>
-        </div>
+      {/* Distribution + Avg */}
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}>
+        <Row gutter={[28, 28]}>
+          {stats.distribution && (
+            <Col xs={24} lg={12}>
+              <Card
+                bordered={false}
+                className="glass"
+                style={{ borderRadius: 16 }}
+                title={
+                  <Text style={{ fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }} type="secondary">
+                    {t('focusDistribution')}
+                  </Text>
+                }
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {[
+                    { k: '15', label: '15 min' },
+                    { k: '25', label: '25 min' },
+                    { k: '45', label: '45 min' },
+                    { k: '60', label: '60 min' },
+                  ].map(({ k, label }) => {
+                    const count = stats.distribution[k] || 0;
+                    const maxCount = Math.max(...Object.values(stats.distribution).map((v: any) => v as number), 1);
+                    const pct = (count / maxCount) * 100;
+                    return (
+                      <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <Text type="secondary" style={{ fontSize: 12, width: 48, flexShrink: 0 }}>{label}</Text>
+                        <div style={{ flex: 1 }}>
+                          <Progress
+                            percent={Math.max(pct, 2)}
+                            showInfo={false}
+                            strokeColor="#a8a29e"
+                            trailColor="#fafaf9"
+                            size="small"
+                          />
+                        </div>
+                        <Text strong style={{ fontSize: 12, width: 20, textAlign: 'right', color: '#78716c' }}>{count}</Text>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
+            </Col>
+          )}
+
+          <Col xs={24} lg={12}>
+            <Card bordered={false} className="glass" style={{ borderRadius: 16, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ textAlign: 'center' }}>
+                <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                  <div>
+                    <Text type="secondary" style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      {t('focusAvgDuration')}
+                    </Text>
+                    <div style={{ marginTop: 4 }}>
+                      <Statistic
+                        value={stats.avg_duration}
+                        suffix="min"
+                        valueStyle={{ fontSize: 30, fontWeight: 600, color: '#1c1917' }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Text type="secondary" style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      {t('focusTotalXP')}
+                    </Text>
+                    <div style={{ marginTop: 4 }}>
+                      <Statistic
+                        value={stats.total_xp}
+                        prefix={<ThunderboltOutlined style={{ color: '#a8a29e' }} />}
+                        valueStyle={{ fontSize: 24, fontWeight: 600, color: '#1c1917' }}
+                      />
+                    </div>
+                  </div>
+                </Space>
+              </div>
+            </Card>
+          </Col>
+        </Row>
       </motion.div>
 
       {/* Recent sessions */}
       {sessions.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass rounded-2xl p-6 lg:p-8">
-          <h2 className="text-sm font-medium text-gray-400 mb-4">{t('focusHistory')}</h2>
-          <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
-            {sessions.slice(0, 20).map((s) => (
-              <div key={s.id} className="flex items-center justify-between p-3 rounded-lg bg-white/5">
-                <div className="flex items-center gap-3">
-                  <Timer className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm text-gray-300">{s.duration_minutes} {t('focusMin')}</span>
-                  {s.completed && <span className="text-xs text-green-400">✓</span>}
-                </div>
-                <div className="flex items-center gap-3 text-xs text-gray-500">
-                  {s.xp_earned > 0 && <span className="text-yellow-400">+{s.xp_earned} XP</span>}
-                  <span>{s.started_at ? new Date(s.started_at).toLocaleDateString() : ''}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}>
+          <Card
+            bordered={false}
+            className="glass"
+            style={{ borderRadius: 16 }}
+            title={
+              <Text style={{ fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }} type="secondary">
+                {t('focusHistory')}
+              </Text>
+            }
+          >
+            <List
+              dataSource={sessions.slice(0, 20)}
+              style={{ maxHeight: 240, overflow: 'auto' }}
+              renderItem={(s) => (
+                <List.Item
+                  style={{ padding: '10px 12px', background: '#fafaf9', borderRadius: 8, marginBottom: 6 }}
+                  extra={
+                    <Space size="middle">
+                      {s.xp_earned > 0 && (
+                        <Text type="secondary" style={{ fontSize: 12 }}>+{s.xp_earned} XP</Text>
+                      )}
+                      <Text type="secondary" style={{ fontSize: 12 }}>
+                        {s.started_at ? new Date(s.started_at).toLocaleDateString() : ''}
+                      </Text>
+                    </Space>
+                  }
+                >
+                  <Space>
+                    <ClockCircleOutlined style={{ color: '#a8a29e', fontSize: 14 }} />
+                    <Text style={{ fontSize: 14 }}>{s.duration_minutes} {t('focusMin')}</Text>
+                    {s.completed && <CheckCircleOutlined style={{ color: '#22c55e', fontSize: 12 }} />}
+                  </Space>
+                </List.Item>
+              )}
+            />
+          </Card>
         </motion.div>
       )}
     </div>

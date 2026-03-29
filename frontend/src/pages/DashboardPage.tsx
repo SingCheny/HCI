@@ -2,14 +2,29 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Zap, Flame, BookOpen, Target, Trophy, TrendingUp, Star,
-  ArrowRight, CheckCircle, Clock, BarChart3,
-  Layers, AlertCircle, CalendarDays, Timer,
-} from 'lucide-react';
+  ThunderboltOutlined,
+  FireOutlined,
+  ReadOutlined,
+  AimOutlined,
+  TrophyOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  AppstoreOutlined,
+  ExclamationCircleOutlined,
+  CalendarOutlined,
+  RiseOutlined,
+  StarOutlined,
+  BarChartOutlined,
+  RightOutlined,
+  FieldTimeOutlined,
+} from '@ant-design/icons';
+import { Card, Row, Col, Progress, Button, Typography, Space, Tag, Spin } from 'antd';
 import { useAuth } from '../hooks/useAuth';
 import { useI18n } from '../i18n';
 import api from '../services/api';
 import type { UserStats, Course } from '../types';
+
+const { Title, Text } = Typography;
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -29,359 +44,494 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-10 h-10 border-4 border-primary-500 border-t-transparent rounded-full spinner" />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 256 }}>
+        <Spin size="large" />
       </div>
     );
   }
 
   const xpPercent = stats ? Math.min((stats.xp_progress / Math.max(stats.xp_needed, 1)) * 100, 100) : 0;
 
+  const statCards = [
+    { icon: <ThunderboltOutlined style={{ fontSize: 16, color: '#a8a29e' }} />, label: t('dashTotalXP'), value: stats?.total_xp || 0 },
+    { icon: <FireOutlined style={{ fontSize: 16, color: '#a8a29e' }} />, label: t('dashDayStreak'), value: `${stats?.streak_days || 0} ${t('dashDays')}` },
+    { icon: <ReadOutlined style={{ fontSize: 16, color: '#a8a29e' }} />, label: t('dashLessonsDone'), value: `${stats?.lessons_completed || 0}/${stats?.total_lessons || 0}` },
+    { icon: <AimOutlined style={{ fontSize: 16, color: '#a8a29e' }} />, label: t('dashQuizAccuracy'), value: `${stats?.accuracy || 0}%` },
+  ];
+
   return (
-    <div className="space-y-8 lg:space-y-10">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
       {/* Welcome Header */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between gap-4 flex-wrap"
       >
-        <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-white">
-            {t('dashWelcomeBack')} <span className="gradient-text">{user?.display_name || t('dashLearner')}</span>! 👋
-          </h1>
-          <p className="text-gray-400 mt-1">{t('dashSubtitle')}</p>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+          <div>
+            <Title level={3} style={{ margin: 0, fontWeight: 600, letterSpacing: '-0.025em' }}>
+              {t('dashWelcomeBack')} {user?.display_name || t('dashLearner')}
+            </Title>
+            <Text type="secondary" style={{ fontSize: 14, marginTop: 8, display: 'block' }}>
+              {t('dashSubtitle')}
+            </Text>
+          </div>
+          <Link to="/courses">
+            <Button
+              type="primary"
+              style={{ background: '#1c1917', borderColor: '#1c1917', borderRadius: 8, height: 40, fontWeight: 500 }}
+            >
+              {t('dashContinueLearning')} <RightOutlined style={{ fontSize: 12 }} />
+            </Button>
+          </Link>
         </div>
-        <Link
-          to="/courses"
-          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 text-white text-sm font-medium hover:from-primary-600 hover:to-primary-700 transition-all flex items-center gap-2 glow-primary"
-        >
-          {t('dashContinueLearning')} <ArrowRight className="w-4 h-4" />
-        </Link>
       </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-7">
-        {[
-          {
-            icon: Zap,
-            label: t('dashTotalXP'),
-            value: stats?.total_xp || 0,
-            color: 'from-yellow-500 to-orange-500',
-            glow: 'rgba(245, 158, 11, 0.2)',
-          },
-          {
-            icon: Flame,
-            label: t('dashDayStreak'),
-            value: `${stats?.streak_days || 0} ${t('dashDays')}`,
-            color: 'from-red-500 to-orange-500',
-            glow: 'rgba(239, 68, 68, 0.2)',
-          },
-          {
-            icon: BookOpen,
-            label: t('dashLessonsDone'),
-            value: `${stats?.lessons_completed || 0}/${stats?.total_lessons || 0}`,
-            color: 'from-primary-500 to-purple-500',
-            glow: 'rgba(99, 102, 241, 0.2)',
-          },
-          {
-            icon: Target,
-            label: t('dashQuizAccuracy'),
-            value: `${stats?.accuracy || 0}%`,
-            color: 'from-green-500 to-emerald-500',
-            glow: 'rgba(16, 185, 129, 0.2)',
-          },
-        ].map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="glass rounded-2xl p-6 lg:p-8 card-hover"
-            style={{ boxShadow: `0 0 30px ${stat.glow}` }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
-                <stat.icon className="w-5 h-5 text-white" />
-              </div>
-              <TrendingUp className="w-4 h-4 text-green-400" />
-            </div>
-            <p className="text-2xl font-bold text-white mt-1">{stat.value}</p>
-            <p className="text-sm text-gray-400 mt-0.5">{stat.label}</p>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Level Progress + Achievements */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-        {/* Level Progress */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="lg:col-span-2 glass rounded-2xl p-6 lg:p-8"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-              <Star className="w-5 h-5 text-yellow-400" /> {t('dashLevelProgress')}
-            </h2>
-            <span className="text-sm text-primary-300 font-medium">{t('dashLevel')} {stats?.level || 1}</span>
-          </div>
-          <div className="w-full h-4 bg-white/10 rounded-full overflow-hidden mb-2">
+      <Row gutter={[20, 20]}>
+        {statCards.map((stat, i) => (
+          <Col xs={12} lg={6} key={stat.label}>
             <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-primary-500 via-accent-500 to-warning-500"
-              initial={{ width: 0 }}
-              animate={{ width: `${xpPercent}%` }}
-              transition={{ duration: 1.5, ease: 'easeOut' }}
-            />
-          </div>
-          <div className="flex justify-between text-xs text-gray-400 gap-4">
-            <span className="whitespace-nowrap">{stats?.xp_progress || 0} XP</span>
-            <span className="whitespace-nowrap text-right">{stats?.xp_needed || 100} XP {t('dashXPNeeded')} {(stats?.level || 1) + 1}</span>
-          </div>
-
-          {/* Quick Course Progress */}
-          <div className="mt-6 space-y-4">
-            <h3 className="text-sm font-medium text-gray-300">{t('dashCourseProgress')}</h3>
-            {courses.slice(0, 4).map((course) => {
-              const done = course.lessons.filter((l) => l.completed).length;
-              const total = course.lessons.length;
-              const pct = total > 0 ? (done / total) * 100 : 0;
-              return (
-                <div key={course.id} className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: course.color + '30' }}>
-                    <BookOpen className="w-4 h-4" style={{ color: course.color }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-center mb-1 gap-2">
-                      <span className="text-sm text-gray-300 truncate">{course.title}</span>
-                      <span className="text-xs text-gray-500 shrink-0">{done}/{total}</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{ width: `${pct}%`, background: course.color }}
-                      />
-                    </div>
-                  </div>
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.06 }}
+            >
+              <Card
+                hoverable
+                style={{ borderRadius: 16 }}
+                styles={{ body: { padding: 24 } }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                  {stat.icon}
+                  <RiseOutlined style={{ fontSize: 14, color: '#d6d3d1' }} />
                 </div>
-              );
-            })}
-          </div>
-        </motion.div>
+                <Text style={{ fontSize: 30, fontWeight: 600, color: '#1c1917', letterSpacing: '-0.025em', display: 'block' }}>
+                  {stat.value}
+                </Text>
+                <Text style={{ fontSize: 12, color: '#a8a29e', marginTop: 8, display: 'block' }}>{stat.label}</Text>
+              </Card>
+            </motion.div>
+          </Col>
+        ))}
+      </Row>
+
+      {/* Level Progress + Quick Stats */}
+      <Row gutter={[24, 24]}>
+        {/* Level Progress */}
+        <Col xs={24} lg={16}>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Card style={{ borderRadius: 16 }} styles={{ body: { padding: 32 } }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                <Space size={8}>
+                  <StarOutlined style={{ fontSize: 16, color: '#a8a29e' }} />
+                  <Text strong style={{ fontSize: 14, color: '#44403c' }}>{t('dashLevelProgress')}</Text>
+                </Space>
+                <Tag color="default" style={{ borderRadius: 6, fontSize: 12, fontWeight: 500 }}>
+                  {t('dashLevel')} {stats?.level || 1}
+                </Tag>
+              </div>
+
+              <Progress
+                percent={Math.round(xpPercent)}
+                strokeColor="#292524"
+                trailColor="#f5f5f4"
+                showInfo={false}
+                size={['100%', 8]}
+                style={{ marginBottom: 12 }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Text style={{ fontSize: 11, color: '#a8a29e' }}>{stats?.xp_progress || 0} XP</Text>
+                <Text style={{ fontSize: 11, color: '#a8a29e' }}>
+                  {stats?.xp_needed || 100} XP {t('dashXPNeeded')} {(stats?.level || 1) + 1}
+                </Text>
+              </div>
+
+              {/* Course Progress */}
+              <div style={{ marginTop: 32 }}>
+                <Text style={{ fontSize: 12, fontWeight: 500, color: '#78716c', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  {t('dashCourseProgress')}
+                </Text>
+                <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  {courses.slice(0, 4).map((course) => {
+                    const done = course.lessons.filter((l) => l.completed).length;
+                    const total = course.lessons.length;
+                    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+                    return (
+                      <div key={course.id} style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                        <div
+                          style={{
+                            width: 36,
+                            height: 36,
+                            borderRadius: 8,
+                            background: '#fafaf9',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <ReadOutlined style={{ fontSize: 14, color: '#a8a29e' }} />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, gap: 8 }}>
+                            <Text ellipsis style={{ fontSize: 14, color: '#57534e' }}>{course.title}</Text>
+                            <Text style={{ fontSize: 11, color: '#a8a29e', flexShrink: 0 }}>{done}/{total}</Text>
+                          </div>
+                          <Progress
+                            percent={pct}
+                            strokeColor="#292524"
+                            trailColor="#f5f5f4"
+                            showInfo={false}
+                            size={['100%', 4]}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        </Col>
 
         {/* Quick Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="glass rounded-2xl p-6 lg:p-8 flex flex-col"
-        >
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
-            <Trophy className="w-5 h-5 text-yellow-400" /> {t('dashQuickStats')}
-          </h2>
-          <div className="space-y-3.5 flex-1">
-            <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                <span className="text-sm text-gray-300">{t('dashQuizzesCorrect')}</span>
-              </div>
-              <span className="text-sm font-semibold text-white">{stats?.quizzes_correct || 0}</span>
-            </div>
-            <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
-              <div className="flex items-center gap-3">
-                <Clock className="w-4 h-4 text-blue-400" />
-                <span className="text-sm text-gray-300">{t('dashQuizzesAttempted')}</span>
-              </div>
-              <span className="text-sm font-semibold text-white">{stats?.quizzes_attempted || 0}</span>
-            </div>
-            <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
-              <div className="flex items-center gap-3">
-                <Trophy className="w-4 h-4 text-yellow-400" />
-                <span className="text-sm text-gray-300">{t('dashAchievements')}</span>
-              </div>
-              <span className="text-sm font-semibold text-white">
-                {stats?.achievements_earned || 0}/{stats?.total_achievements || 0}
-              </span>
-            </div>
-          </div>
-          <Link
-            to="/achievements"
-            className="mt-4 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 text-sm text-primary-300 hover:bg-primary-500/10 transition"
+        <Col xs={24} lg={8}>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+            style={{ height: '100%' }}
           >
-            <Trophy className="w-4 h-4" /> {t('dashViewAllAchievements')}
-          </Link>
+            <Card
+              style={{ borderRadius: 16, height: '100%' }}
+              styles={{ body: { padding: 32, display: 'flex', flexDirection: 'column', height: '100%' } }}
+            >
+              <Space size={8} style={{ marginBottom: 20 }}>
+                <TrophyOutlined style={{ fontSize: 16, color: '#a8a29e' }} />
+                <Text strong style={{ fontSize: 14, color: '#44403c' }}>{t('dashQuickStats')}</Text>
+              </Space>
 
-          {/* AI Mode Status */}
-          <div className="mt-4 p-4 rounded-xl bg-primary-500/10 border border-primary-500/20">
-            <div className="flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-primary-400" />
-              <span className="text-xs text-primary-300">
-                {t('dashAIMode')}: <strong>{stats?.ai_mode_enabled ? 'ON' : 'OFF'}</strong>
-              </span>
-            </div>
-            <Link to="/comparison" className="text-xs text-primary-400 hover:underline mt-1 block">
-              {t('dashViewComparison')}
-            </Link>
-          </div>
-        </motion.div>
-      </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
+                {[
+                  { icon: <CheckCircleOutlined style={{ fontSize: 14, color: '#a8a29e' }} />, label: t('dashQuizzesCorrect'), value: stats?.quizzes_correct || 0 },
+                  { icon: <ClockCircleOutlined style={{ fontSize: 14, color: '#a8a29e' }} />, label: t('dashQuizzesAttempted'), value: stats?.quizzes_attempted || 0 },
+                  { icon: <TrophyOutlined style={{ fontSize: 14, color: '#a8a29e' }} />, label: t('dashAchievements'), value: `${stats?.achievements_earned || 0}/${stats?.total_achievements || 0}` },
+                ].map((item, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '12px 14px',
+                      borderRadius: 8,
+                      background: '#fafaf9',
+                    }}
+                  >
+                    <Space size={10}>
+                      {item.icon}
+                      <Text style={{ fontSize: 14, color: '#78716c' }}>{item.label}</Text>
+                    </Space>
+                    <Text strong style={{ fontSize: 14, color: '#292524' }}>{item.value}</Text>
+                  </div>
+                ))}
+              </div>
 
-      {/* ===== New Feature Widgets ===== */}
-      {widgets && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-7">
-          {/* Flashcard Widget */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="glass rounded-2xl p-5 lg:p-7">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                <Layers className="w-4 h-4 text-white" />
-              </div>
-              <h3 className="text-sm font-semibold text-white">{t('dashFlashcards')}</h3>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">{t('dashFlashTotal')}</span>
-                <span className="text-sm font-bold text-white">{widgets.flashcards.total}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">{t('dashFlashDue')}</span>
-                <span className={`text-sm font-bold ${widgets.flashcards.due > 0 ? 'text-yellow-300' : 'text-green-300'}`}>{widgets.flashcards.due}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">{t('dashFlashMastered')}</span>
-                <span className="text-sm font-bold text-green-400">{widgets.flashcards.mastered}</span>
-              </div>
-              {widgets.flashcards.total > 0 && (
-                <div className="h-1.5 bg-white/10 rounded-full overflow-hidden mt-1">
-                  <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-500" style={{ width: `${Math.round(widgets.flashcards.mastered / Math.max(widgets.flashcards.total, 1) * 100)}%` }} />
+              <Link to="/achievements" style={{ marginTop: 20 }}>
+                <Button
+                  block
+                  icon={<TrophyOutlined />}
+                  style={{ borderRadius: 8, background: '#fafaf9', borderColor: '#e7e5e4', color: '#78716c', height: 40 }}
+                >
+                  {t('dashViewAllAchievements')}
+                </Button>
+              </Link>
+
+              {/* AI Mode Status */}
+              <div
+                style={{
+                  marginTop: 16,
+                  padding: 14,
+                  borderRadius: 8,
+                  background: '#fafaf9',
+                  border: '1px solid #f5f5f4',
+                }}
+              >
+                <Space size={8}>
+                  <BarChartOutlined style={{ fontSize: 14, color: '#a8a29e' }} />
+                  <Text style={{ fontSize: 12, color: '#78716c' }}>
+                    {t('dashAIMode')}: <Text strong style={{ fontSize: 12, color: '#44403c' }}>{stats?.ai_mode_enabled ? 'ON' : 'OFF'}</Text>
+                  </Text>
+                </Space>
+                <div style={{ marginTop: 6 }}>
+                  <Link to="/comparison" style={{ fontSize: 12, color: '#a8a29e' }}>
+                    {t('dashViewComparison')}
+                  </Link>
                 </div>
-              )}
-            </div>
-            <Link to="/flashcards" className="mt-4 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/5 text-xs text-primary-300 hover:bg-primary-500/10 transition">
-              <Layers className="w-3.5 h-3.5" /> {t('dashFlashGo')}
-            </Link>
+              </div>
+            </Card>
           </motion.div>
+        </Col>
+      </Row>
+
+      {/* Feature Widgets */}
+      {widgets && (
+        <Row gutter={[20, 20]}>
+          {/* Flashcard Widget */}
+          <Col xs={24} sm={12} lg={6}>
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+              <Card
+                hoverable
+                style={{ borderRadius: 16 }}
+                styles={{ body: { padding: 24 } }}
+              >
+                <Space size={10} style={{ marginBottom: 20 }}>
+                  <AppstoreOutlined style={{ fontSize: 16, color: '#a8a29e' }} />
+                  <Text strong style={{ fontSize: 14, color: '#44403c' }}>{t('dashFlashcards')}</Text>
+                </Space>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashFlashTotal')}</Text>
+                    <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.flashcards.total}</Text>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashFlashDue')}</Text>
+                    <Text strong style={{ fontSize: 14, color: widgets.flashcards.due > 0 ? '#292524' : '#a8a29e' }}>
+                      {widgets.flashcards.due}
+                    </Text>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashFlashMastered')}</Text>
+                    <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.flashcards.mastered}</Text>
+                  </div>
+                  {widgets.flashcards.total > 0 && (
+                    <Progress
+                      percent={Math.round(widgets.flashcards.mastered / Math.max(widgets.flashcards.total, 1) * 100)}
+                      strokeColor="#292524"
+                      trailColor="#f5f5f4"
+                      showInfo={false}
+                      size={['100%', 4]}
+                    />
+                  )}
+                </div>
+
+                <Link to="/flashcards" style={{ display: 'block', marginTop: 20 }}>
+                  <Button
+                    block
+                    icon={<AppstoreOutlined />}
+                    size="small"
+                    style={{ borderRadius: 8, background: '#fafaf9', borderColor: '#e7e5e4', color: '#78716c', height: 36, fontSize: 12 }}
+                  >
+                    {t('dashFlashGo')}
+                  </Button>
+                </Link>
+              </Card>
+            </motion.div>
+          </Col>
 
           {/* Wrong Answers Widget */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="glass rounded-2xl p-5 lg:p-7">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center">
-                <AlertCircle className="w-4 h-4 text-white" />
-              </div>
-              <h3 className="text-sm font-semibold text-white">{t('dashWrong')}</h3>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">{t('dashWrongTotal')}</span>
-                <span className="text-sm font-bold text-red-300">{widgets.wrong_answers.total_wrong}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">{t('dashWrongCorrected')}</span>
-                <span className="text-sm font-bold text-green-400">{widgets.wrong_answers.corrected}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">{t('dashWrongRemaining')}</span>
-                <span className={`text-sm font-bold ${widgets.wrong_answers.uncorrected > 0 ? 'text-yellow-300' : 'text-green-300'}`}>{widgets.wrong_answers.uncorrected}</span>
-              </div>
-              {widgets.wrong_answers.total_wrong > 0 && (
-                <div className="h-1.5 bg-white/10 rounded-full overflow-hidden mt-1">
-                  <div className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-500" style={{ width: `${Math.round(widgets.wrong_answers.corrected / Math.max(widgets.wrong_answers.total_wrong, 1) * 100)}%` }} />
+          <Col xs={24} sm={12} lg={6}>
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
+              <Card
+                hoverable
+                style={{ borderRadius: 16 }}
+                styles={{ body: { padding: 24 } }}
+              >
+                <Space size={10} style={{ marginBottom: 20 }}>
+                  <ExclamationCircleOutlined style={{ fontSize: 16, color: '#a8a29e' }} />
+                  <Text strong style={{ fontSize: 14, color: '#44403c' }}>{t('dashWrong')}</Text>
+                </Space>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashWrongTotal')}</Text>
+                    <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.wrong_answers.total_wrong}</Text>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashWrongCorrected')}</Text>
+                    <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.wrong_answers.corrected}</Text>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashWrongRemaining')}</Text>
+                    <Text strong style={{ fontSize: 14, color: widgets.wrong_answers.uncorrected > 0 ? '#292524' : '#a8a29e' }}>
+                      {widgets.wrong_answers.uncorrected}
+                    </Text>
+                  </div>
+                  {widgets.wrong_answers.total_wrong > 0 && (
+                    <Progress
+                      percent={Math.round(widgets.wrong_answers.corrected / Math.max(widgets.wrong_answers.total_wrong, 1) * 100)}
+                      strokeColor="#292524"
+                      trailColor="#f5f5f4"
+                      showInfo={false}
+                      size={['100%', 4]}
+                    />
+                  )}
                 </div>
-              )}
-            </div>
-            <Link to="/wrong-answers" className="mt-4 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/5 text-xs text-primary-300 hover:bg-primary-500/10 transition">
-              <AlertCircle className="w-3.5 h-3.5" /> {t('dashWrongGo')}
-            </Link>
-          </motion.div>
+
+                <Link to="/wrong-answers" style={{ display: 'block', marginTop: 20 }}>
+                  <Button
+                    block
+                    icon={<ExclamationCircleOutlined />}
+                    size="small"
+                    style={{ borderRadius: 8, background: '#fafaf9', borderColor: '#e7e5e4', color: '#78716c', height: 36, fontSize: 12 }}
+                  >
+                    {t('dashWrongGo')}
+                  </Button>
+                </Link>
+              </Card>
+            </motion.div>
+          </Col>
 
           {/* Study Plan Widget */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="glass rounded-2xl p-5 lg:p-7">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                <CalendarDays className="w-4 h-4 text-white" />
-              </div>
-              <h3 className="text-sm font-semibold text-white">{t('dashPlan')}</h3>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">{t('dashPlanCompleted')}</span>
-                <span className="text-sm font-bold text-white">{widgets.study_plans.completed_plans}/{widgets.study_plans.total_plans}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">{t('dashPlanTasks')}</span>
-                <span className="text-sm font-bold text-white">{widgets.study_plans.done_items}/{widgets.study_plans.total_items}</span>
-              </div>
-              {widgets.study_plans.active_plans.map((p: any) => (
-                <div key={p.id} className="space-y-1">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-400 truncate mr-2">{p.title}</span>
-                    <span className="text-gray-500 shrink-0">{p.done}/{p.total}</span>
+          <Col xs={24} sm={12} lg={6}>
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+              <Card
+                hoverable
+                style={{ borderRadius: 16 }}
+                styles={{ body: { padding: 24 } }}
+              >
+                <Space size={10} style={{ marginBottom: 20 }}>
+                  <CalendarOutlined style={{ fontSize: 16, color: '#a8a29e' }} />
+                  <Text strong style={{ fontSize: 14, color: '#44403c' }}>{t('dashPlan')}</Text>
+                </Space>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashPlanCompleted')}</Text>
+                    <Text strong style={{ fontSize: 14, color: '#292524' }}>
+                      {widgets.study_plans.completed_plans}/{widgets.study_plans.total_plans}
+                    </Text>
                   </div>
-                  <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500" style={{ width: `${p.progress}%` }} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashPlanTasks')}</Text>
+                    <Text strong style={{ fontSize: 14, color: '#292524' }}>
+                      {widgets.study_plans.done_items}/{widgets.study_plans.total_items}
+                    </Text>
                   </div>
+                  {widgets.study_plans.active_plans.map((p: any) => (
+                    <div key={p.id}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                        <Text ellipsis style={{ fontSize: 12, color: '#a8a29e', marginRight: 8 }}>{p.title}</Text>
+                        <Text style={{ fontSize: 12, color: '#a8a29e', flexShrink: 0 }}>{p.done}/{p.total}</Text>
+                      </div>
+                      <Progress
+                        percent={p.progress}
+                        strokeColor="#292524"
+                        trailColor="#f5f5f4"
+                        showInfo={false}
+                        size={['100%', 4]}
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <Link to="/study-plan" className="mt-4 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/5 text-xs text-primary-300 hover:bg-primary-500/10 transition">
-              <CalendarDays className="w-3.5 h-3.5" /> {t('dashPlanGo')}
-            </Link>
-          </motion.div>
+
+                <Link to="/study-plan" style={{ display: 'block', marginTop: 20 }}>
+                  <Button
+                    block
+                    icon={<CalendarOutlined />}
+                    size="small"
+                    style={{ borderRadius: 8, background: '#fafaf9', borderColor: '#e7e5e4', color: '#78716c', height: 36, fontSize: 12 }}
+                  >
+                    {t('dashPlanGo')}
+                  </Button>
+                </Link>
+              </Card>
+            </motion.div>
+          </Col>
 
           {/* Focus Analytics Widget */}
           {widgets.focus && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }} className="glass rounded-2xl p-5 lg:p-7">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
-                  <Timer className="w-4 h-4 text-white" />
-                </div>
-                <h3 className="text-sm font-semibold text-white">{t('dashFocus')}</h3>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-400">{t('dashFocusToday')}</span>
-                  <span className="text-sm font-bold text-emerald-300">{widgets.focus.today_minutes} min</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-400">{t('dashFocusTotal')}</span>
-                  <span className="text-sm font-bold text-white">{widgets.focus.total_minutes} min</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-400">{t('dashFocusSessions')}</span>
-                  <span className="text-sm font-bold text-white">{widgets.focus.total_sessions}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-400">{t('dashFocusAvg')}</span>
-                  <span className="text-sm font-bold text-white">{widgets.focus.avg_duration} min</span>
-                </div>
-                {/* Weekly bar chart */}
-                {widgets.focus.weekly && (
-                  <div className="pt-2">
-                    <p className="text-xs text-gray-500 mb-2">{t('dashFocusWeek')}</p>
-                    <div className="flex items-end gap-1.5" style={{ height: '64px' }}>
-                      {widgets.focus.weekly.map((d: any, i: number) => {
-                        const maxMins = Math.max(...widgets.focus.weekly.map((w: any) => w.minutes), 1);
-                        const barH = Math.max(Math.round((d.minutes / maxMins) * 44), 3);
-                        return (
-                          <div key={i} className="flex-1 flex flex-col items-center justify-end gap-1" style={{ height: '100%' }}>
-                            <div
-                              className="w-full rounded-t bg-gradient-to-t from-emerald-500 to-teal-400 transition-all"
-                              style={{ height: `${barH}px` }}
-                              title={`${d.minutes} min`}
-                            />
-                            <span className="text-[9px] text-gray-600">{d.weekday}</span>
-                          </div>
-                        );
-                      })}
+            <Col xs={24} sm={12} lg={6}>
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
+                <Card
+                  hoverable
+                  style={{ borderRadius: 16 }}
+                  styles={{ body: { padding: 24 } }}
+                >
+                  <Space size={10} style={{ marginBottom: 20 }}>
+                    <FieldTimeOutlined style={{ fontSize: 16, color: '#a8a29e' }} />
+                    <Text strong style={{ fontSize: 14, color: '#44403c' }}>{t('dashFocus')}</Text>
+                  </Space>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashFocusToday')}</Text>
+                      <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.focus.today_minutes} min</Text>
                     </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashFocusTotal')}</Text>
+                      <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.focus.total_minutes} min</Text>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashFocusSessions')}</Text>
+                      <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.focus.total_sessions}</Text>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashFocusAvg')}</Text>
+                      <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.focus.avg_duration} min</Text>
+                    </div>
+
+                    {/* Weekly bar chart */}
+                    {widgets.focus.weekly && (
+                      <div style={{ paddingTop: 12 }}>
+                        <Text style={{ fontSize: 10, color: '#a8a29e', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          {t('dashFocusWeek')}
+                        </Text>
+                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 56, marginTop: 8 }}>
+                          {widgets.focus.weekly.map((d: any, i: number) => {
+                            const maxMins = Math.max(...widgets.focus.weekly.map((w: any) => w.minutes), 1);
+                            const barH = Math.max(Math.round((d.minutes / maxMins) * 40), 2);
+                            return (
+                              <div
+                                key={i}
+                                style={{
+                                  flex: 1,
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  alignItems: 'center',
+                                  justifyContent: 'flex-end',
+                                  gap: 4,
+                                  height: '100%',
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    width: '100%',
+                                    borderRadius: 2,
+                                    background: '#d6d3d1',
+                                    height: barH,
+                                    transition: 'all 0.3s',
+                                  }}
+                                  title={`${d.minutes} min`}
+                                />
+                                <span style={{ fontSize: 9, color: '#a8a29e' }}>{d.weekday}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              <Link to="/focus" className="mt-4 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/5 text-xs text-primary-300 hover:bg-primary-500/10 transition">
-                <Timer className="w-3.5 h-3.5" /> {t('dashFocusGo')}
-              </Link>
-            </motion.div>
+
+                  <Link to="/focus" style={{ display: 'block', marginTop: 20 }}>
+                    <Button
+                      block
+                      icon={<FieldTimeOutlined />}
+                      size="small"
+                      style={{ borderRadius: 8, background: '#fafaf9', borderColor: '#e7e5e4', color: '#78716c', height: 36, fontSize: 12 }}
+                    >
+                      {t('dashFocusGo')}
+                    </Button>
+                  </Link>
+                </Card>
+              </motion.div>
+            </Col>
           )}
-        </div>
+        </Row>
       )}
     </div>
   );
