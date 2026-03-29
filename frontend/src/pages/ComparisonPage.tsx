@@ -97,23 +97,23 @@ export default function ComparisonPage() {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 lg:space-y-10">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+        <h1 className="text-2xl lg:text-3xl font-bold text-white flex items-center gap-2">
           <GitCompareArrows className="w-7 h-7 text-primary-400" /> {t('compTitle')}
         </h1>
         <p className="text-gray-400 mt-1">{t('compSubtitle')}</p>
       </motion.div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         {statCards.map((card, i) => (
           <motion.div
             key={card.title}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="glass rounded-xl p-6"
+            className="glass rounded-xl p-5 lg:p-6"
           >
             <div className="flex items-center gap-3 mb-3">
               <div className={`p-2 rounded-lg ${card.bg}`}>
@@ -127,16 +127,16 @@ export default function ComparisonPage() {
       </div>
 
       {/* Charts grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         {/* Bar Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="glass rounded-2xl p-7"
+          className="glass rounded-2xl p-6 lg:p-8"
         >
           <h3 className="text-white font-semibold mb-5">{t('compPerformance')}</h3>
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart data={barData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
               <XAxis dataKey="name" tick={{ fill: '#9ca3af', fontSize: 12 }} />
@@ -156,10 +156,10 @@ export default function ComparisonPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="glass rounded-2xl p-7"
+          className="glass rounded-2xl p-6 lg:p-8"
         >
           <h3 className="text-white font-semibold mb-5">{t('compSkillRadar')}</h3>
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height={300}>
             <RadarChart data={radarData}>
               <PolarGrid stroke="rgba(255,255,255,0.1)" />
               <PolarAngleAxis dataKey="metric" tick={{ fill: '#9ca3af', fontSize: 12 }} />
@@ -176,10 +176,10 @@ export default function ComparisonPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="glass rounded-2xl p-7"
+          className="glass rounded-2xl p-6 lg:p-8"
         >
           <h3 className="text-white font-semibold mb-5">{t('compQuizDistribution')}</h3>
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
                 data={pieData}
@@ -206,7 +206,7 @@ export default function ComparisonPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="glass rounded-2xl p-7"
+          className="glass rounded-2xl p-6 lg:p-8"
         >
           <h3 className="text-white font-semibold mb-5">{t('compKeyInsights')}</h3>
           <div className="space-y-4">

@@ -57,10 +57,10 @@ export default function AchievementsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 lg:space-y-10">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+        <h1 className="text-2xl lg:text-3xl font-bold text-white flex items-center gap-2">
           <Award className="w-7 h-7 text-yellow-400" /> {t('achievementsTitle')}
         </h1>
         <p className="text-gray-400 mt-1">
@@ -82,14 +82,14 @@ export default function AchievementsPage() {
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" /> {t('achievementsEarned')}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
             {earned.map((a, i) => (
               <motion.div
                 key={a.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="glass rounded-2xl p-6 card-hover"
+                className="glass rounded-2xl p-6 lg:p-7 card-hover"
               >
                 <div className="flex items-start gap-4">
                   <div
@@ -126,14 +126,14 @@ export default function AchievementsPage() {
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <Lock className="w-5 h-5 text-gray-500" /> {t('achievementsLocked')}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
             {locked.map((a, i) => (
               <motion.div
                 key={a.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="glass rounded-2xl p-6 opacity-50"
+                className="glass rounded-2xl p-6 lg:p-7 opacity-50"
               >
                 <div className="flex items-start gap-4">
                   <div className="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center shrink-0">

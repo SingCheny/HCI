@@ -210,7 +210,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="flex-1 min-h-screen relative z-10"
       >
-        <div className="p-8 lg:p-10 max-w-7xl mx-auto">
+        <div className="p-5 sm:p-8 lg:p-10 xl:p-12 max-w-[1440px] mx-auto">
           {children}
         </div>
       </motion.main>

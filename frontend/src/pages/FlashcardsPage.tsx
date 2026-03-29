@@ -83,11 +83,11 @@ export default function FlashcardsPage() {
   }
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto">
+    <div className="space-y-8 lg:space-y-10">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+          <h1 className="text-2xl lg:text-3xl font-bold text-white flex items-center gap-2">
             <Layers className="w-7 h-7 text-primary-400" /> {t('flashcardsTitle')}
           </h1>
           <p className="text-gray-400 mt-1">{t('flashcardsSubtitle')}</p>
@@ -109,7 +109,7 @@ export default function FlashcardsPage() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="glass rounded-2xl p-6 space-y-4 overflow-hidden"
+            className="glass rounded-2xl p-6 lg:p-7 space-y-4 overflow-hidden"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -155,7 +155,7 @@ export default function FlashcardsPage() {
       </AnimatePresence>
 
       {/* Auto-generate from lesson */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass rounded-2xl p-5">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass rounded-2xl p-5 lg:p-6">
         <div className="flex items-center gap-3 mb-3">
           <Sparkles className="w-5 h-5 text-yellow-400" />
           <span className="text-sm font-medium text-white">{t('flashcardsAutoGenerate')}</span>
@@ -199,7 +199,7 @@ export default function FlashcardsPage() {
           <div className="perspective-1000" style={{ perspective: '1000px' }}>
             <motion.div
               onClick={() => setFlipped(!flipped)}
-              className="relative w-full h-64 cursor-pointer"
+              className="relative w-full h-72 cursor-pointer"
               style={{ transformStyle: 'preserve-3d' }}
               animate={{ rotateY: flipped ? 180 : 0 }}
               transition={{ duration: 0.5 }}

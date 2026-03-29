@@ -63,14 +63,14 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] max-w-3xl mx-auto">
+    <div className="flex flex-col h-[calc(100vh-4rem)]">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-4 pb-5 border-b border-white/10">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center">
+        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center">
           <Bot className="w-5 h-5 text-white" />
         </div>
         <div className="flex-1">
-          <h1 className="text-lg font-bold text-white">{t('chatTitle')}</h1>
+          <h1 className="text-lg lg:text-xl font-bold text-white">{t('chatTitle')}</h1>
           <p className="text-xs text-gray-400">{t('chatSubtitle')}</p>
         </div>
 
@@ -101,7 +101,7 @@ export default function ChatPage() {
       </motion.div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto py-5 space-y-5 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto py-6 space-y-5 scrollbar-thin">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
             <Sparkles className="w-12 h-12 mb-3 opacity-30" />
@@ -180,7 +180,7 @@ export default function ChatPage() {
       </div>
 
       {/* Input */}
-      <div className="pt-4 border-t border-white/10">
+      <div className="pt-5 border-t border-white/10">
         <form
           onSubmit={(e) => { e.preventDefault(); handleSend(); }}
           className="flex items-center gap-3"
@@ -189,7 +189,7 @@ export default function ChatPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={t('chatPlaceholder')}
-            className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 text-sm"
+            className="flex-1 px-5 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 text-sm"
           />
           <button
             type="submit"

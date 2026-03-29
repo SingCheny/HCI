@@ -27,13 +27,13 @@ export default function CoursesPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 lg:space-y-10">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-bold text-white">{t('coursesTitle')}</h1>
+        <h1 className="text-2xl lg:text-3xl font-bold text-white">{t('coursesTitle')}</h1>
         <p className="text-gray-400 mt-1">{t('coursesSubtitle')}</p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         {courses.map((course, idx) => {
           const done = course.lessons.filter((l) => l.completed).length;
           const total = course.lessons.length;
@@ -51,7 +51,7 @@ export default function CoursesPage() {
               {/* Color top bar */}
               <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${course.color}, ${course.color}88)` }} />
               
-              <div className="p-7">
+              <div className="p-6 lg:p-8">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div
@@ -92,12 +92,12 @@ export default function CoursesPage() {
                 </div>
 
                 {/* Lessons List */}
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   {course.lessons.map((lesson) => (
                     <Link
                       key={lesson.id}
                       to={`/lesson/${lesson.id}`}
-                      className="flex items-center justify-between p-3.5 rounded-xl bg-white/5 hover:bg-white/10 transition-all group"
+                      className="flex items-center justify-between p-3 lg:p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-all group"
                     >
                       <div className="flex items-center gap-3">
                         <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${

@@ -264,11 +264,53 @@ def seed_database():
         db.close()
 
 
+def refresh_demo_focus_sessions():
+    """Refresh demo user's focus session dates to be relative to now, so weekly charts always show data."""
+    db = SessionLocal()
+    try:
+        demo_user = db.query(User).filter(User.username == "demo").first()
+        if not demo_user:
+            return
+        sessions = db.query(FocusSession).filter(FocusSession.user_id == demo_user.id).all()
+        if not sessions:
+            return
+        # Desired distribution: spread across recent days
+        focus_data = [
+            (25, 0),   # today
+            (45, 1),   # yesterday
+            (15, 1),   # yesterday (2nd session)
+            (25, 2),   # 2 days ago
+            (60, 3),   # 3 days ago
+            (25, 5),   # 5 days ago
+        ]
+        for i, session in enumerate(sessions):
+            if i < len(focus_data):
+                mins, days_ago = focus_data[i]
+                base_time = datetime.now(timezone.utc) - timedelta(days=days_ago)
+                session.duration_minutes = mins
+                session.xp_earned = mins
+                session.started_at = base_time - timedelta(minutes=mins + 5)
+                session.ended_at = base_time
+            else:
+                # Extra sessions: place within last 7 days
+                days_ago = i % 7
+                base_time = datetime.now(timezone.utc) - timedelta(days=days_ago)
+                session.started_at = base_time - timedelta(minutes=session.duration_minutes + 5)
+                session.ended_at = base_time
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        print(f"Refresh focus sessions error: {e}")
+    finally:
+        db.close()
+
+
 # ---- App Lifecycle ----
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     seed_database()
+    refresh_demo_focus_sessions()
     yield
 
 

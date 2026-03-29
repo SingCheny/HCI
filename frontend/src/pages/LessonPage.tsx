@@ -106,7 +106,7 @@ export default function LessonPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="space-y-8 lg:space-y-10">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-4">
         <Link to="/courses" className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition text-gray-400 hover:text-white">
@@ -156,7 +156,7 @@ export default function LessonPage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="glass rounded-2xl p-10"
+            className="glass rounded-2xl p-8 lg:p-10"
           >
             <div className="lesson-content">
               <ReactMarkdown>{lesson.content}</ReactMarkdown>
@@ -202,10 +202,10 @@ export default function LessonPage() {
               </div>
             </div>
 
-            <div className="glass rounded-2xl p-8">
-              <h2 className="text-lg font-semibold text-white mb-8">{quizzes[currentQuiz].question}</h2>
+            <div className="glass rounded-2xl p-6 lg:p-8">
+              <h2 className="text-lg font-semibold text-white mb-6 lg:mb-8">{quizzes[currentQuiz].question}</h2>
 
-              <div className="space-y-3.5">
+              <div className="space-y-3.5 lg:space-y-4">
                 {quizzes[currentQuiz].options.map((opt: string, i: number) => {
                   let cls = 'quiz-option p-4 rounded-xl border border-white/10 cursor-pointer';
                   if (quizResult) {
@@ -332,7 +332,7 @@ export default function LessonPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: 'spring', stiffness: 200 }}
-            className="glass rounded-2xl p-10 text-center"
+            className="glass rounded-2xl p-8 lg:p-10 text-center"
           >
             <motion.div
               initial={{ scale: 0 }}

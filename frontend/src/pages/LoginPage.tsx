@@ -71,7 +71,7 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative z-10 w-full max-w-lg mx-6"
+        className="relative z-10 w-full max-w-md sm:max-w-lg mx-6"
       >
         {/* Logo */}
         <div className="text-center mb-10">
@@ -88,8 +88,8 @@ export default function LoginPage() {
         </div>
 
         {/* Form */}
-        <div className="glass-strong rounded-3xl px-8 py-10 sm:px-14 sm:py-12">
-          <h2 className="text-xl font-semibold text-white mb-8 text-center">
+        <div className="glass-strong rounded-3xl px-7 py-9 sm:px-12 sm:py-11">
+          <h2 className="text-xl font-semibold text-white mb-7 text-center">
             {isRegister ? t('loginCreateAccount') : t('loginWelcome')}
           </h2>
 

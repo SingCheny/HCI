@@ -177,19 +177,19 @@ export default function WrongAnswersPage() {
   // ===== LOBBY =====
   if (phase === 'lobby') {
     return (
-      <div className="max-w-2xl mx-auto space-y-8">
+      <div className="space-y-8 lg:space-y-10">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center pt-8">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg shadow-red-500/30">
+          <div className="w-20 h-20 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg shadow-red-500/30">
             <Swords className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white">{t('wrongChallengeTitle')}</h1>
+          <h1 className="text-3xl lg:text-4xl font-bold text-white">{t('wrongChallengeTitle')}</h1>
           <p className="text-gray-400 mt-2">{t('wrongChallengeDesc')}</p>
         </motion.div>
 
         {/* Rules */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass rounded-2xl p-6 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass rounded-2xl p-6 lg:p-8 space-y-4">
           <h2 className="text-sm font-semibold text-white">{t('wrongRules')}</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 lg:gap-5">
             <div className="flex items-start gap-3 p-3 rounded-xl bg-white/5">
               <Heart className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
               <div>
@@ -222,7 +222,7 @@ export default function WrongAnswersPage() {
         </motion.div>
 
         {/* Status */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass rounded-2xl p-6 text-center">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass rounded-2xl p-6 lg:p-8 text-center">
           <p className="text-4xl font-bold text-white mb-1">{allItems.length}</p>
           <p className="text-sm text-gray-400">{t('wrongBossCount')}</p>
         </motion.div>
@@ -252,9 +252,9 @@ export default function WrongAnswersPage() {
     const progress = ((current + 1) / queue.length) * 100;
 
     return (
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="space-y-6 lg:space-y-8">
         {/* HUD */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-4">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-4 lg:p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               {/* HP */}
@@ -320,7 +320,7 @@ export default function WrongAnswersPage() {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            className="glass rounded-2xl p-6"
+            className="glass rounded-2xl p-6 lg:p-7"
           >
             <p className="text-base text-white font-medium leading-relaxed mb-5">{item.question}</p>
 
@@ -435,7 +435,7 @@ export default function WrongAnswersPage() {
   // ===== RESULT (game over) / VICTORY =====
   const isVictory = phase === 'victory';
   return (
-    <div className="max-w-lg mx-auto pt-12 space-y-6">
+    <div className="max-w-2xl mx-auto pt-10 lg:pt-12 space-y-6 lg:space-y-8">
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -457,7 +457,7 @@ export default function WrongAnswersPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="glass rounded-2xl p-6"
+        className="glass rounded-2xl p-6 lg:p-8"
       >
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>

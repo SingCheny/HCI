@@ -38,7 +38,7 @@ export default function DashboardPage() {
   const xpPercent = stats ? Math.min((stats.xp_progress / Math.max(stats.xp_needed, 1)) * 100, 100) : 0;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 lg:space-y-10">
       {/* Welcome Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -46,7 +46,7 @@ export default function DashboardPage() {
         className="flex items-center justify-between gap-4 flex-wrap"
       >
         <div>
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-2xl lg:text-3xl font-bold text-white">
             {t('dashWelcomeBack')} <span className="gradient-text">{user?.display_name || t('dashLearner')}</span>! 👋
           </h1>
           <p className="text-gray-400 mt-1">{t('dashSubtitle')}</p>
@@ -60,7 +60,7 @@ export default function DashboardPage() {
       </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-7">
         {[
           {
             icon: Zap,
@@ -96,7 +96,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="glass rounded-2xl p-7 card-hover"
+            className="glass rounded-2xl p-6 lg:p-8 card-hover"
             style={{ boxShadow: `0 0 30px ${stat.glow}` }}
           >
             <div className="flex items-center justify-between mb-3">
@@ -112,13 +112,13 @@ export default function DashboardPage() {
       </div>
 
       {/* Level Progress + Achievements */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Level Progress */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="lg:col-span-2 glass rounded-2xl p-8"
+          className="lg:col-span-2 glass rounded-2xl p-6 lg:p-8"
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
@@ -174,7 +174,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="glass rounded-2xl p-8 flex flex-col"
+          className="glass rounded-2xl p-6 lg:p-8 flex flex-col"
         >
           <h2 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
             <Trophy className="w-5 h-5 text-yellow-400" /> {t('dashQuickStats')}
@@ -228,9 +228,9 @@ export default function DashboardPage() {
 
       {/* ===== New Feature Widgets ===== */}
       {widgets && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-7">
           {/* Flashcard Widget */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="glass rounded-2xl p-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="glass rounded-2xl p-5 lg:p-7">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
                 <Layers className="w-4 h-4 text-white" />
@@ -262,7 +262,7 @@ export default function DashboardPage() {
           </motion.div>
 
           {/* Wrong Answers Widget */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="glass rounded-2xl p-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="glass rounded-2xl p-5 lg:p-7">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center">
                 <AlertCircle className="w-4 h-4 text-white" />
@@ -294,7 +294,7 @@ export default function DashboardPage() {
           </motion.div>
 
           {/* Study Plan Widget */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="glass rounded-2xl p-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="glass rounded-2xl p-5 lg:p-7">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                 <CalendarDays className="w-4 h-4 text-white" />
@@ -329,7 +329,7 @@ export default function DashboardPage() {
 
           {/* Focus Analytics Widget */}
           {widgets.focus && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }} className="glass rounded-2xl p-6">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }} className="glass rounded-2xl p-5 lg:p-7">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
                   <Timer className="w-4 h-4 text-white" />
