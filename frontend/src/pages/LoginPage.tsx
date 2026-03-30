@@ -46,7 +46,7 @@ export default function LoginPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#fafafa',
+        background: '#F8F4EF',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -61,7 +61,7 @@ export default function LoginPage() {
           top: 24,
           right: 24,
           zIndex: 20,
-          color: '#a8a29e',
+          color: '#A08F84',
           fontSize: 13,
         }}
       >
@@ -85,7 +85,7 @@ export default function LoginPage() {
               height: 48,
               margin: '0 auto 24px',
               borderRadius: 12,
-              background: '#1c1917',
+              background: '#B88A72',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -106,8 +106,8 @@ export default function LoginPage() {
           bordered
           style={{
             borderRadius: 16,
-            borderColor: '#f5f5f4',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+            borderColor: '#F1E7DC',
+            boxShadow: '0 1px 3px rgba(76,64,56,0.06)',
           }}
           styles={{
             body: { padding: '44px 36px' },
@@ -144,7 +144,7 @@ export default function LoginPage() {
             <Form.Item
               name="username"
               label={
-                <Text style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#78716c', fontWeight: 500 }}>
+                <Text style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#7A6A60', fontWeight: 500 }}>
                   {t('loginUsername')}
                 </Text>
               }
@@ -161,7 +161,7 @@ export default function LoginPage() {
                 <Form.Item
                   name="email"
                   label={
-                    <Text style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#78716c', fontWeight: 500 }}>
+                    <Text style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#7A6A60', fontWeight: 500 }}>
                       {t('loginEmail')}
                     </Text>
                   }
@@ -175,7 +175,7 @@ export default function LoginPage() {
                 <Form.Item
                   name="displayName"
                   label={
-                    <Text style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#78716c', fontWeight: 500 }}>
+                    <Text style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#7A6A60', fontWeight: 500 }}>
                       {t('loginDisplayName')}
                     </Text>
                   }
@@ -191,7 +191,7 @@ export default function LoginPage() {
             <Form.Item
               name="password"
               label={
-                <Text style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#78716c', fontWeight: 500 }}>
+                <Text style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#7A6A60', fontWeight: 500 }}>
                   {t('loginPassword')}
                 </Text>
               }
@@ -212,7 +212,7 @@ export default function LoginPage() {
                 style={{
                   height: 44,
                   borderRadius: 8,
-                  background: '#1c1917',
+                  background: '#B88A72',
                   fontWeight: 500,
                   fontSize: 14,
                 }}
@@ -232,7 +232,7 @@ export default function LoginPage() {
                 setError('');
                 form.resetFields();
               }}
-              style={{ color: '#a8a29e', fontWeight: 500, fontSize: 14 }}
+              style={{ color: '#A08F84', fontWeight: 500, fontSize: 14 }}
             >
               {isRegister ? t('loginSwitchToLogin') : t('loginSwitchToRegister')}
             </Button>
@@ -244,22 +244,22 @@ export default function LoginPage() {
                 marginTop: 20,
                 padding: 14,
                 borderRadius: 8,
-                background: '#fafaf9',
-                border: '1px solid #f5f5f4',
+                background: '#F8F4EF',
+                border: '1px solid #F1E7DC',
                 textAlign: 'center',
               }}
             >
-              <Text style={{ fontSize: 12, color: '#a8a29e' }}>
-                <Text strong style={{ fontSize: 12, color: '#78716c' }}>
+              <Text style={{ fontSize: 12, color: '#A08F84' }}>
+                <Text strong style={{ fontSize: 12, color: '#7A6A60' }}>
                   {t('loginDemoAccount')}:
                 </Text>{' '}
                 <code
                   style={{
-                    background: '#fff',
+                    background: '#FFFDF9',
                     padding: '2px 6px',
                     borderRadius: 4,
-                    border: '1px solid #f5f5f4',
-                    color: '#57534e',
+                    border: '1px solid #F1E7DC',
+                    color: '#4C4038',
                     fontSize: 11,
                   }}
                 >
@@ -268,11 +268,11 @@ export default function LoginPage() {
                 {' / '}
                 <code
                   style={{
-                    background: '#fff',
+                    background: '#FFFDF9',
                     padding: '2px 6px',
                     borderRadius: 4,
-                    border: '1px solid #f5f5f4',
-                    color: '#57534e',
+                    border: '1px solid #F1E7DC',
+                    color: '#4C4038',
                     fontSize: 11,
                   }}
                 >

@@ -117,7 +117,7 @@ export default function FocusTimerPage() {
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
         <Title level={3} style={{ marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <ClockCircleOutlined style={{ fontSize: 20, color: '#a8a29e' }} /> {t('focusTitle')}
+          <ClockCircleOutlined style={{ fontSize: 20, color: '#A08F84' }} /> {t('focusTitle')}
         </Title>
         <Text type="secondary" style={{ fontSize: 14 }}>{t('focusSubtitle')}</Text>
       </motion.div>
@@ -143,8 +143,8 @@ export default function FocusTimerPage() {
             type="circle"
             percent={progress}
             size={260}
-            strokeColor="#292524"
-            trailColor="rgba(0,0,0,0.04)"
+            strokeColor="#B88A72"
+            trailColor="rgba(76,64,56,0.06)"
             strokeWidth={3}
             format={() => (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -152,13 +152,13 @@ export default function FocusTimerPage() {
                   fontSize: 36,
                   fontFamily: 'ui-monospace, SFMono-Regular, monospace',
                   fontWeight: 600,
-                  color: '#1c1917',
+                  color: '#4C4038',
                   letterSpacing: '-0.02em',
                   fontVariantNumeric: 'tabular-nums',
                 }}>
                   {timeDisplay}
                 </span>
-                <span style={{ fontSize: 11, color: '#a8a29e', marginTop: 4 }}>
+                <span style={{ fontSize: 11, color: '#A08F84', marginTop: 4 }}>
                   {duration} {t('focusMin')}
                 </span>
               </div>
@@ -234,7 +234,7 @@ export default function FocusTimerPage() {
                   value={s.value}
                   suffix={s.suffix}
                   prefix={s.icon}
-                  valueStyle={{ fontSize: 24, fontWeight: 600, color: '#1c1917' }}
+                  valueStyle={{ fontSize: 24, fontWeight: 600, color: '#4C4038' }}
                 />
               </Card>
             </Col>
@@ -266,13 +266,13 @@ export default function FocusTimerPage() {
                 const isToday = i === stats.weekly_data.length - 1;
                 return (
                   <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 6, height: '100%' }}>
-                    <span style={{ fontSize: 10, color: '#a8a29e' }}>{d.minutes > 0 ? `${d.minutes}m` : ''}</span>
-                    <div style={{ width: '100%', maxWidth: 48, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: 0, borderRadius: 3, background: '#fafaf9' }}>
+                    <span style={{ fontSize: 10, color: '#A08F84' }}>{d.minutes > 0 ? `${d.minutes}m` : ''}</span>
+                    <div style={{ width: '100%', maxWidth: 48, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: 0, borderRadius: 3, background: '#F8F4EF' }}>
                       <div
                         style={{
                           width: '100%',
                           borderRadius: 3,
-                          background: isToday ? '#292524' : '#d6d3d1',
+                          background: isToday ? '#B88A72' : '#E2D4C7',
                           height: barH,
                           transition: 'all 0.3s',
                         }}
@@ -280,7 +280,7 @@ export default function FocusTimerPage() {
                     </div>
                     <span style={{
                       fontSize: 10,
-                      color: isToday ? '#292524' : '#a8a29e',
+                      color: isToday ? '#4C4038' : '#A08F84',
                       fontWeight: isToday ? 600 : 400,
                     }}>
                       {d.weekday}
@@ -325,12 +325,12 @@ export default function FocusTimerPage() {
                           <Progress
                             percent={Math.max(pct, 2)}
                             showInfo={false}
-                            strokeColor="#a8a29e"
-                            trailColor="#fafaf9"
+                            strokeColor="#A08F84"
+                            trailColor="#F8F4EF"
                             size="small"
                           />
                         </div>
-                        <Text strong style={{ fontSize: 12, width: 20, textAlign: 'right', color: '#78716c' }}>{count}</Text>
+                        <Text strong style={{ fontSize: 12, width: 20, textAlign: 'right', color: '#7A6A60' }}>{count}</Text>
                       </div>
                     );
                   })}
@@ -351,7 +351,7 @@ export default function FocusTimerPage() {
                       <Statistic
                         value={stats.avg_duration}
                         suffix="min"
-                        valueStyle={{ fontSize: 30, fontWeight: 600, color: '#1c1917' }}
+                        valueStyle={{ fontSize: 30, fontWeight: 600, color: '#4C4038' }}
                       />
                     </div>
                   </div>
@@ -362,8 +362,8 @@ export default function FocusTimerPage() {
                     <div style={{ marginTop: 4 }}>
                       <Statistic
                         value={stats.total_xp}
-                        prefix={<ThunderboltOutlined style={{ color: '#a8a29e' }} />}
-                        valueStyle={{ fontSize: 24, fontWeight: 600, color: '#1c1917' }}
+                        prefix={<ThunderboltOutlined style={{ color: '#A08F84' }} />}
+                        valueStyle={{ fontSize: 24, fontWeight: 600, color: '#4C4038' }}
                       />
                     </div>
                   </div>
@@ -392,7 +392,7 @@ export default function FocusTimerPage() {
               style={{ maxHeight: 240, overflow: 'auto' }}
               renderItem={(s) => (
                 <List.Item
-                  style={{ padding: '10px 12px', background: '#fafaf9', borderRadius: 8, marginBottom: 6 }}
+                  style={{ padding: '10px 12px', background: '#F8F4EF', borderRadius: 8, marginBottom: 6 }}
                   extra={
                     <Space size="middle">
                       {s.xp_earned > 0 && (
@@ -405,7 +405,7 @@ export default function FocusTimerPage() {
                   }
                 >
                   <Space>
-                    <ClockCircleOutlined style={{ color: '#a8a29e', fontSize: 14 }} />
+                    <ClockCircleOutlined style={{ color: '#A08F84', fontSize: 14 }} />
                     <Text style={{ fontSize: 14 }}>{s.duration_minutes} {t('focusMin')}</Text>
                     {s.completed && <CheckCircleOutlined style={{ color: '#22c55e', fontSize: 12 }} />}
                   </Space>

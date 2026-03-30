@@ -209,7 +209,7 @@ export default function WrongAnswersPage() {
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', paddingTop: 40 }}>
           <div style={{
             width: 64, height: 64, margin: '0 auto 20px', borderRadius: 12,
-            background: '#1c1917', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: '#B88A72', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <Swords style={{ width: 28, height: 28, color: 'white' }} />
           </div>
@@ -224,15 +224,15 @@ export default function WrongAnswersPage() {
             </Text>
             <Row gutter={[12, 12]}>
               {[
-                { iconNode: <Heart style={{ width: 16, height: 16, color: '#a8a29e' }} />, label: t('wrongRuleHP'), desc: t('wrongRuleHPDesc') },
-                { iconNode: <Flame style={{ width: 16, height: 16, color: '#a8a29e' }} />, label: t('wrongRuleStreak'), desc: t('wrongRuleStreakDesc') },
-                { iconNode: <ThunderboltOutlined style={{ fontSize: 16, color: '#a8a29e' }} />, label: t('wrongRuleXP'), desc: t('wrongRuleXPDesc') },
-                { iconNode: <ClockCircleOutlined style={{ fontSize: 16, color: '#a8a29e' }} />, label: t('wrongRuleTime'), desc: t('wrongRuleTimeDesc') },
+                { iconNode: <Heart style={{ width: 16, height: 16, color: '#A08F84' }} />, label: t('wrongRuleHP'), desc: t('wrongRuleHPDesc') },
+                { iconNode: <Flame style={{ width: 16, height: 16, color: '#A08F84' }} />, label: t('wrongRuleStreak'), desc: t('wrongRuleStreakDesc') },
+                { iconNode: <ThunderboltOutlined style={{ fontSize: 16, color: '#A08F84' }} />, label: t('wrongRuleXP'), desc: t('wrongRuleXPDesc') },
+                { iconNode: <ClockCircleOutlined style={{ fontSize: 16, color: '#A08F84' }} />, label: t('wrongRuleTime'), desc: t('wrongRuleTimeDesc') },
               ].map(({ iconNode, label, desc }) => (
                 <Col key={label} xs={12} sm={6}>
                   <div style={{
                     display: 'flex', alignItems: 'flex-start', gap: 10, padding: 12,
-                    borderRadius: 8, background: '#fafaf9',
+                    borderRadius: 8, background: '#F8F4EF',
                   }}>
                     <span style={{ flexShrink: 0, marginTop: 2, lineHeight: 1 }}>{iconNode}</span>
                     <div>
@@ -251,7 +251,7 @@ export default function WrongAnswersPage() {
           <Card style={{ borderRadius: 16, textAlign: 'center' }}>
             <Statistic
               value={allItems.length}
-              valueStyle={{ fontSize: 30, fontWeight: 600, color: '#1c1917' }}
+              valueStyle={{ fontSize: 30, fontWeight: 600, color: '#4C4038' }}
             />
             <Text type="secondary" style={{ fontSize: 14 }}>{t('wrongBossCount')}</Text>
           </Card>
@@ -264,14 +264,14 @@ export default function WrongAnswersPage() {
               size="large"
               icon={<Swords style={{ width: 20, height: 20 }} />}
               onClick={startChallenge}
-              style={{ background: '#1c1917', color: '#fff', border: 'none', borderRadius: 12, height: 52, paddingInline: 40, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 8 }}
+              style={{ background: '#B88A72', color: '#fff', border: 'none', borderRadius: 12, height: 52, paddingInline: 40, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 8 }}
             >
               {t('wrongStartChallenge')}
             </Button>
           </motion.div>
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center' }}>
-            <Crown style={{ width: 40, height: 40, color: '#d6d3d1', margin: '0 auto 12px', display: 'block' }} />
+            <Crown style={{ width: 40, height: 40, color: '#E2D4C7', margin: '0 auto 12px', display: 'block' }} />
             <Text type="secondary" style={{ fontWeight: 500, fontSize: 14 }}>{t('wrongEmpty')}</Text>
           </motion.div>
         )}
@@ -298,7 +298,7 @@ export default function WrongAnswersPage() {
                       style={{
                         width: 16,
                         height: 16,
-                        color: i < hp ? '#f87171' : '#e7e5e4',
+                        color: i < hp ? '#f87171' : '#E2D4C7',
                         fill: i < hp ? '#f87171' : 'none',
                         transition: 'all 0.3s',
                       }}
@@ -308,7 +308,7 @@ export default function WrongAnswersPage() {
                 {streak > 0 && (
                   <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
                     <Tag style={{ display: 'flex', alignItems: 'center', gap: 4, borderRadius: 6, margin: 0 }}>
-                      <Flame style={{ width: 12, height: 12, color: '#78716c' }} />
+                      <Flame style={{ width: 12, height: 12, color: '#7A6A60' }} />
                       <span style={{ fontWeight: 600 }}>x{streak}</span>
                     </Tag>
                   </motion.div>
@@ -325,7 +325,7 @@ export default function WrongAnswersPage() {
                 >
                   <ClockCircleOutlined /> {countdown}s
                 </Tag>
-                <Space size={4} style={{ color: '#78716c' }}>
+                <Space size={4} style={{ color: '#7A6A60' }}>
                   <ThunderboltOutlined />
                   <Text strong style={{ fontSize: 14 }}>{totalXP}</Text>
                 </Space>
@@ -335,8 +335,8 @@ export default function WrongAnswersPage() {
             <Progress
               percent={progressPct}
               showInfo={false}
-              strokeColor="#292524"
-              trailColor="#f5f5f4"
+              strokeColor="#B88A72"
+              trailColor="#F1E7DC"
               size="small"
               style={{ margin: 0 }}
             />
@@ -350,7 +350,7 @@ export default function WrongAnswersPage() {
           animate={{ opacity: 1, x: 0 }}
           style={{ display: 'flex', alignItems: 'center', gap: 8 }}
         >
-          <Shield style={{ width: 14, height: 14, color: '#a8a29e' }} />
+          <Shield style={{ width: 14, height: 14, color: '#A08F84' }} />
           <Text type="secondary" style={{ fontSize: 12 }}>{item.lesson_title}</Text>
           <Text type="secondary" style={{ fontSize: 10, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', marginLeft: 'auto' }}>
             Stage {current + 1}
@@ -366,7 +366,7 @@ export default function WrongAnswersPage() {
             exit={{ opacity: 0, scale: 0.97, y: -16 }}
           >
             <Card style={{ borderRadius: 16 }}>
-              <Text style={{ fontSize: 14, fontWeight: 500, color: '#292524', lineHeight: 1.7, display: 'block', marginBottom: 24 }}>
+              <Text style={{ fontSize: 14, fontWeight: 500, color: '#4C4038', lineHeight: 1.7, display: 'block', marginBottom: 24 }}>
                 {item.question}
               </Text>
 
@@ -375,9 +375,9 @@ export default function WrongAnswersPage() {
                   const isCorrectOpt = oi === item.correct_answer;
                   const isSelected = oi === selected;
 
-                  let borderColor = '#e7e5e4';
-                  let bgColor = '#fafaf9';
-                  let textColor = '#57534e';
+                  let borderColor = '#E2D4C7';
+                  let bgColor = '#F8F4EF';
+                  let textColor = '#4C4038';
 
                   if (answered) {
                     if (isCorrectOpt) {
@@ -389,9 +389,9 @@ export default function WrongAnswersPage() {
                       bgColor = '#fef2f2';
                       textColor = '#dc2626';
                     } else {
-                      borderColor = '#fafaf9';
-                      bgColor = '#fafaf9';
-                      textColor = '#d6d3d1';
+                      borderColor = '#F8F4EF';
+                      bgColor = '#F8F4EF';
+                      textColor = '#E2D4C7';
                     }
                   }
 
@@ -483,7 +483,7 @@ export default function WrongAnswersPage() {
                       size="small"
                       icon={<ReadOutlined style={{ fontSize: 12 }} />}
                       onClick={() => setShowExplanation(true)}
-                      style={{ padding: 0, fontSize: 12, color: '#a8a29e', height: 'auto' }}
+                      style={{ padding: 0, fontSize: 12, color: '#A08F84', height: 'auto' }}
                     >
                       {t('wrongShowExplanation')}
                     </Button>
@@ -492,9 +492,9 @@ export default function WrongAnswersPage() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                     >
-                      <Card size="small" style={{ borderRadius: 8, background: '#fafaf9', border: '1px solid #f5f5f4' }}>
-                        <Text style={{ fontSize: 12, lineHeight: 1.7, color: '#57534e' }}>
-                          <Text strong style={{ color: '#44403c' }}>{t('wrongExplanation')}:</Text>{' '}
+                      <Card size="small" style={{ borderRadius: 8, background: '#F8F4EF', border: '1px solid #F1E7DC' }}>
+                        <Text style={{ fontSize: 12, lineHeight: 1.7, color: '#4C4038' }}>
+                          <Text strong style={{ color: '#4C4038' }}>{t('wrongExplanation')}:</Text>{' '}
                           {item.explanation}
                         </Text>
                       </Card>
@@ -508,7 +508,7 @@ export default function WrongAnswersPage() {
                   type="primary"
                   size="large"
                   onClick={goNext}
-                  style={{ background: '#1c1917', color: '#fff', border: 'none', borderRadius: 12, height: 48, paddingInline: 32, fontWeight: 500 }}
+                  style={{ background: '#B88A72', color: '#fff', border: 'none', borderRadius: 12, height: 48, paddingInline: 32, fontWeight: 500 }}
                 >
                   {hp <= 0 && !isCorrect
                     ? t('wrongSeeResults')
@@ -537,12 +537,12 @@ export default function WrongAnswersPage() {
       >
         <div style={{
           width: 80, height: 80, margin: '0 auto 24px', borderRadius: 16,
-          background: isVictory ? '#1c1917' : '#e7e5e4',
+          background: isVictory ? '#B88A72' : '#E2D4C7',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           {isVictory
             ? <Crown style={{ width: 40, height: 40, color: 'white' }} />
-            : <Shield style={{ width: 40, height: 40, color: '#a8a29e' }} />
+            : <Shield style={{ width: 40, height: 40, color: '#A08F84' }} />
           }
         </div>
         <Title level={3} style={{ marginBottom: 4 }}>
@@ -561,26 +561,26 @@ export default function WrongAnswersPage() {
         <Card style={{ borderRadius: 16 }}>
           <Row gutter={[20, 20]} style={{ textAlign: 'center' }}>
             <Col span={8}>
-              <Swords style={{ width: 16, height: 16, color: '#a8a29e', margin: '0 auto 4px', display: 'block' }} />
+              <Swords style={{ width: 16, height: 16, color: '#A08F84', margin: '0 auto 4px', display: 'block' }} />
               <Statistic
                 value={defeated.length}
-                valueStyle={{ fontSize: 20, fontWeight: 600, color: '#1c1917' }}
+                valueStyle={{ fontSize: 20, fontWeight: 600, color: '#4C4038' }}
               />
               <Text type="secondary" style={{ fontSize: 11 }}>{t('wrongDefeated')}</Text>
             </Col>
             <Col span={8}>
-              <Flame style={{ width: 16, height: 16, color: '#a8a29e', margin: '0 auto 4px', display: 'block' }} />
+              <Flame style={{ width: 16, height: 16, color: '#A08F84', margin: '0 auto 4px', display: 'block' }} />
               <Statistic
                 value={bestStreak}
-                valueStyle={{ fontSize: 20, fontWeight: 600, color: '#1c1917' }}
+                valueStyle={{ fontSize: 20, fontWeight: 600, color: '#4C4038' }}
               />
               <Text type="secondary" style={{ fontSize: 11 }}>{t('wrongBestStreak')}</Text>
             </Col>
             <Col span={8}>
-              <ThunderboltOutlined style={{ fontSize: 16, color: '#a8a29e', display: 'block', margin: '0 auto 4px' }} />
+              <ThunderboltOutlined style={{ fontSize: 16, color: '#A08F84', display: 'block', margin: '0 auto 4px' }} />
               <Statistic
                 value={totalXP}
-                valueStyle={{ fontSize: 20, fontWeight: 600, color: '#1c1917' }}
+                valueStyle={{ fontSize: 20, fontWeight: 600, color: '#4C4038' }}
               />
               <Text type="secondary" style={{ fontSize: 11 }}>XP</Text>
             </Col>
@@ -599,7 +599,7 @@ export default function WrongAnswersPage() {
                     height: 12,
                     borderRadius: 3,
                     transition: 'all 0.3s',
-                    background: isDone ? '#4ade80' : isFailed ? '#fca5a5' : '#f5f5f4',
+                    background: isDone ? '#4ade80' : isFailed ? '#fca5a5' : '#F1E7DC',
                   }}
                 />
               );
@@ -618,7 +618,7 @@ export default function WrongAnswersPage() {
           size="large"
           icon={<ReloadOutlined />}
           onClick={() => { fetchItems(); setPhase('lobby'); }}
-          style={{ background: '#f5f5f4', color: '#57534e', border: 'none', borderRadius: 12, height: 48, paddingInline: 24, fontWeight: 500 }}
+          style={{ background: '#F1E7DC', color: '#4C4038', border: 'none', borderRadius: 12, height: 48, paddingInline: 24, fontWeight: 500 }}
         >
           {t('wrongBackToLobby')}
         </Button>
@@ -628,7 +628,7 @@ export default function WrongAnswersPage() {
             size="large"
             icon={<Swords style={{ width: 14, height: 14 }} />}
             onClick={startChallenge}
-            style={{ background: '#1c1917', color: '#fff', border: 'none', borderRadius: 12, height: 48, paddingInline: 24, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6 }}
+            style={{ background: '#B88A72', color: '#fff', border: 'none', borderRadius: 12, height: 48, paddingInline: 24, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6 }}
           >
             {t('wrongRetryChallenge')}
           </Button>

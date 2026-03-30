@@ -99,7 +99,7 @@ export default function StudyPlanPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <Title level={3} style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <CalendarOutlined style={{ color: '#999' }} /> {t('planTitle')}
+            <CalendarOutlined style={{ color: '#A08F84' }} /> {t('planTitle')}
           </Title>
           <Text type="secondary" style={{ marginTop: 8, display: 'block', fontSize: 13 }}>
             {t('planSubtitle')}
@@ -295,7 +295,7 @@ function PlanCard({
         >
           <Space>
             <AimOutlined
-              style={{ color: plan.completed ? '#52c41a' : '#999' }}
+              style={{ color: plan.completed ? '#52c41a' : '#A08F84' }}
             />
             <div>
               <Text strong style={{ fontSize: 14 }}>
@@ -375,8 +375,8 @@ function PlanCard({
           <Progress
             percent={pct}
             showInfo={false}
-            strokeColor="#333"
-            trailColor="#f5f5f5"
+            strokeColor="#B88A72"
+            trailColor="#F1E7DC"
             size={['100%', 3]}
             style={{ margin: 0, lineHeight: 0 }}
           />

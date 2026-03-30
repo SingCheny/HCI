@@ -21,15 +21,15 @@ import type { ComparisonData } from '../types';
 
 const { Title, Text } = Typography;
 
-const COLORS_AI = '#292524';
-const COLORS_STD = '#d6d3d1';
+const COLORS_AI = '#B88A72';
+const COLORS_STD = '#E2D4C7';
 
 const tooltipContentStyle = {
-  background: '#ffffff',
+  background: '#FFFDF9',
   border: '1px solid rgba(0,0,0,0.06)',
   borderRadius: 8,
-  color: '#1c1917',
-  boxShadow: '0 4px 12px rgba(0,0,0,0.04)',
+  color: '#4C4038',
+  boxShadow: '0 4px 12px rgba(76,64,56,0.06)',
   fontSize: 12,
 } as const;
 
@@ -89,10 +89,10 @@ export default function ComparisonPage() {
   ];
 
   const statCards = [
-    { title: t('compAIAccuracy'), value: `${Math.round(ai.accuracy)}%`, icon: <Sparkles style={{ width: 16, height: 16, color: '#a8a29e' }} /> },
-    { title: t('compStdAccuracy'), value: `${Math.round(std.accuracy)}%`, icon: <ExperimentOutlined style={{ fontSize: 16, color: '#a8a29e' }} /> },
-    { title: t('compAISpeed'), value: `${Math.round(ai.avg_time * 10) / 10}s`, icon: <ClockCircleOutlined style={{ fontSize: 16, color: '#a8a29e' }} /> },
-    { title: t('compHintsUsed'), value: ai.hint_usage.toString(), icon: <ThunderboltOutlined style={{ fontSize: 16, color: '#a8a29e' }} /> },
+    { title: t('compAIAccuracy'), value: `${Math.round(ai.accuracy)}%`, icon: <Sparkles style={{ width: 16, height: 16, color: '#A08F84' }} /> },
+    { title: t('compStdAccuracy'), value: `${Math.round(std.accuracy)}%`, icon: <ExperimentOutlined style={{ fontSize: 16, color: '#A08F84' }} /> },
+    { title: t('compAISpeed'), value: `${Math.round(ai.avg_time * 10) / 10}s`, icon: <ClockCircleOutlined style={{ fontSize: 16, color: '#A08F84' }} /> },
+    { title: t('compHintsUsed'), value: ai.hint_usage.toString(), icon: <ThunderboltOutlined style={{ fontSize: 16, color: '#A08F84' }} /> },
   ];
 
   return (
@@ -100,7 +100,7 @@ export default function ComparisonPage() {
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
         <Space align="center" size={8}>
-          <FireOutlined style={{ fontSize: 20, color: '#a8a29e' }} />
+          <FireOutlined style={{ fontSize: 20, color: '#A08F84' }} />
           <Title level={3} style={{ margin: 0 }}>{t('compTitle')}</Title>
         </Space>
         <Text type="secondary" style={{ display: 'block', marginTop: 8, fontSize: 14 }}>
@@ -126,7 +126,7 @@ export default function ComparisonPage() {
                     </Space>
                   }
                   value={card.value}
-                  valueStyle={{ fontSize: 30, fontWeight: 600, color: '#1c1917' }}
+                  valueStyle={{ fontSize: 30, fontWeight: 600, color: '#4C4038' }}
                 />
               </Card>
             </motion.div>
@@ -150,9 +150,9 @@ export default function ComparisonPage() {
             >
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={barData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.04)" />
-                  <XAxis dataKey="name" tick={{ fill: '#a8a29e', fontSize: 11 }} />
-                  <YAxis tick={{ fill: '#a8a29e', fontSize: 11 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(76,64,56,0.06)" />
+                  <XAxis dataKey="name" tick={{ fill: '#A08F84', fontSize: 11 }} />
+                  <YAxis tick={{ fill: '#A08F84', fontSize: 11 }} />
                   <Tooltip contentStyle={tooltipContentStyle} />
                   <Legend />
                   <Bar dataKey="AI" fill={COLORS_AI} radius={[3, 3, 0, 0]} />
@@ -177,8 +177,8 @@ export default function ComparisonPage() {
             >
               <ResponsiveContainer width="100%" height={280}>
                 <RadarChart data={radarData}>
-                  <PolarGrid stroke="rgba(0,0,0,0.04)" />
-                  <PolarAngleAxis dataKey="metric" tick={{ fill: '#a8a29e', fontSize: 11 }} />
+                  <PolarGrid stroke="rgba(76,64,56,0.06)" />
+                  <PolarAngleAxis dataKey="metric" tick={{ fill: '#A08F84', fontSize: 11 }} />
                   <PolarRadiusAxis tick={false} axisLine={false} />
                   <Radar name="AI" dataKey="AI" stroke={COLORS_AI} fill={COLORS_AI} fillOpacity={0.15} />
                   <Radar name="Standard" dataKey="Standard" stroke={COLORS_STD} fill={COLORS_STD} fillOpacity={0.15} />
@@ -238,50 +238,50 @@ export default function ComparisonPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {ai.accuracy > std.accuracy ? (
                   <InsightRow
-                    icon={<Sparkles style={{ width: 14, height: 14, color: '#57534e' }} />}
+                    icon={<Sparkles style={{ width: 14, height: 14, color: '#7A6A60' }} />}
                     text={`AI mode boosted your accuracy by ${Math.round(ai.accuracy - std.accuracy)}%`}
                     positive
                   />
                 ) : ai.accuracy < std.accuracy ? (
                   <InsightRow
-                    icon={<ExperimentOutlined style={{ fontSize: 14, color: '#57534e' }} />}
+                    icon={<ExperimentOutlined style={{ fontSize: 14, color: '#7A6A60' }} />}
                     text={`You performed ${Math.round(std.accuracy - ai.accuracy)}% better without AI`}
                     positive
                   />
                 ) : (
                   <InsightRow
-                    icon={<AimOutlined style={{ fontSize: 14, color: '#a8a29e' }} />}
+                    icon={<AimOutlined style={{ fontSize: 14, color: '#A08F84' }} />}
                     text="Equal accuracy in both modes"
                   />
                 )}
 
                 {ai.avg_time < std.avg_time ? (
                   <InsightRow
-                    icon={<ClockCircleOutlined style={{ fontSize: 14, color: '#57534e' }} />}
+                    icon={<ClockCircleOutlined style={{ fontSize: 14, color: '#7A6A60' }} />}
                     text={`AI mode helped you answer ${Math.round(std.avg_time - ai.avg_time)}s faster on average`}
                     positive
                   />
                 ) : ai.avg_time > std.avg_time ? (
                   <InsightRow
-                    icon={<ClockCircleOutlined style={{ fontSize: 14, color: '#a8a29e' }} />}
+                    icon={<ClockCircleOutlined style={{ fontSize: 14, color: '#A08F84' }} />}
                     text={`Standard mode was ${Math.round(ai.avg_time - std.avg_time)}s faster on average`}
                   />
                 ) : null}
 
                 <InsightRow
-                  icon={<ThunderboltOutlined style={{ fontSize: 14, color: '#57534e' }} />}
+                  icon={<ThunderboltOutlined style={{ fontSize: 14, color: '#7A6A60' }} />}
                   text="Standard mode earns 1.5x XP bonus per correct answer"
                   positive
                 />
 
                 <InsightRow
-                  icon={<AimOutlined style={{ fontSize: 14, color: '#57534e' }} />}
+                  icon={<AimOutlined style={{ fontSize: 14, color: '#7A6A60' }} />}
                   text={`Total quizzes taken: ${ai.total_attempts + std.total_attempts} (AI: ${ai.total_attempts}, Std: ${std.total_attempts})`}
                 />
 
                 {ai.hint_usage > 0 && (
                   <InsightRow
-                    icon={<Sparkles style={{ width: 14, height: 14, color: '#a8a29e' }} />}
+                    icon={<Sparkles style={{ width: 14, height: 14, color: '#A08F84' }} />}
                     text={`You used AI hints ${ai.hint_usage} time${ai.hint_usage > 1 ? 's' : ''}`}
                   />
                 )}
@@ -303,11 +303,11 @@ function InsightRow({ icon, text, positive }: { icon: ReactNode; text: string; p
         gap: 12,
         padding: 14,
         borderRadius: 8,
-        background: '#fafaf9',
+        background: '#F8F4EF',
       }}
     >
       <div style={{ marginTop: 2 }}>{icon}</div>
-      <span style={{ fontSize: 14, color: positive ? '#57534e' : '#a8a29e' }}>{text}</span>
+      <span style={{ fontSize: 14, color: positive ? '#7A6A60' : '#A08F84' }}>{text}</span>
     </div>
   );
 }

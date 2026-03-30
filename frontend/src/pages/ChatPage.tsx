@@ -85,13 +85,13 @@ export default function ChatPage() {
           alignItems: 'center',
           gap: 16,
           paddingBottom: 20,
-          borderBottom: '1px solid #f5f5f5',
+          borderBottom: '1px solid #E2D4C7',
         }}
       >
         <Avatar
           size={40}
           icon={<RobotOutlined />}
-          style={{ backgroundColor: '#1a1a1a', flexShrink: 0 }}
+          style={{ backgroundColor: '#B88A72', flexShrink: 0 }}
         />
         <div style={{ flex: 1 }}>
           <Title level={5} style={{ margin: 0 }}>
@@ -187,7 +187,7 @@ export default function ChatPage() {
                 <Avatar
                   size={32}
                   icon={<RobotOutlined />}
-                  style={{ backgroundColor: '#1a1a1a', flexShrink: 0, marginTop: 2 }}
+                  style={{ backgroundColor: '#B88A72', flexShrink: 0, marginTop: 2 }}
                 />
               )}
 
@@ -199,10 +199,10 @@ export default function ChatPage() {
                   fontSize: 14,
                   lineHeight: 1.6,
                   ...(msg.role === 'user'
-                    ? { background: '#1a1a1a', color: '#fff' }
+                    ? { background: '#B88A72', color: '#fff' }
                     : {
-                        background: '#fafafa',
-                        border: '1px solid #f0f0f0',
+                        background: '#F8F4EF',
+                        border: '1px solid #E2D4C7',
                         color: 'rgba(0,0,0,0.65)',
                       }),
                 }}
@@ -220,7 +220,7 @@ export default function ChatPage() {
                 <Avatar
                   size={32}
                   icon={<UserOutlined />}
-                  style={{ backgroundColor: '#f5f5f5', color: '#999', flexShrink: 0, marginTop: 2 }}
+                  style={{ backgroundColor: '#F1E7DC', color: '#A08F84', flexShrink: 0, marginTop: 2 }}
                 />
               )}
             </motion.div>
@@ -236,12 +236,12 @@ export default function ChatPage() {
             <Avatar
               size={32}
               icon={<RobotOutlined />}
-              style={{ backgroundColor: '#1a1a1a', flexShrink: 0 }}
+              style={{ backgroundColor: '#B88A72', flexShrink: 0 }}
             />
             <div
               style={{
-                background: '#fafafa',
-                border: '1px solid #f0f0f0',
+                background: '#F8F4EF',
+                border: '1px solid #E2D4C7',
                 padding: '12px 16px',
                 borderRadius: 12,
                 display: 'flex',
@@ -261,7 +261,7 @@ export default function ChatPage() {
       </div>
 
       {/* ---- Input bar ---- */}
-      <div style={{ paddingTop: 20, borderTop: '1px solid #f5f5f5' }}>
+      <div style={{ paddingTop: 20, borderTop: '1px solid #E2D4C7' }}>
         <Space.Compact style={{ display: 'flex', width: '100%' }}>
           <TextArea
             value={input}

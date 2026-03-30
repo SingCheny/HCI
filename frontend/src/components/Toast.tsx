@@ -12,7 +12,7 @@ export function toast(t: ToastParams) {
     notification.success({
       message: t.title,
       description: t.message,
-      icon: <TrophyOutlined style={{ color: '#292524' }} />,
+      icon: <TrophyOutlined style={{ color: '#B88A72' }} />,
       placement: 'topRight',
       duration: 4,
     });

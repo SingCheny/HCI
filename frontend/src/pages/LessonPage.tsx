@@ -230,8 +230,8 @@ export default function LessonPage() {
               <Progress
                 percent={((currentQuiz + 1) / quizzes.length) * 100}
                 showInfo={false}
-                strokeColor="#292524"
-                trailColor="#f5f5f4"
+                strokeColor="#B88A72"
+                trailColor="#F1E7DC"
                 size="small"
                 style={{ flex: 1, margin: 0 }}
               />
@@ -279,15 +279,15 @@ export default function LessonPage() {
                         padding: 16,
                         borderRadius: 8,
                         border: `1px solid ${
-                          isCorrectAnswer ? '#bbf7d0' : isWrongSelected ? '#fecaca' : isSelected && !quizResult ? '#a8a29e' : '#f5f5f4'
+                          isCorrectAnswer ? '#bbf7d0' : isWrongSelected ? '#fecaca' : isSelected && !quizResult ? '#A08F84' : '#F1E7DC'
                         }`,
                         background: isCorrectAnswer
                           ? '#f0fdf4'
                           : isWrongSelected
                           ? '#fef2f2'
                           : isSelected && !quizResult
-                          ? '#fafaf9'
-                          : '#fff',
+                          ? '#F8F4EF'
+                          : '#FFFDF9',
                         cursor: quizResult ? 'default' : 'pointer',
                         opacity: isDimmed ? 0.4 : 1,
                         transition: 'all 0.2s',
@@ -308,20 +308,20 @@ export default function LessonPage() {
                             : isWrongSelected
                             ? '#fee2e2'
                             : isSelected
-                            ? '#e7e5e4'
-                            : '#fafaf9',
+                            ? '#E2D4C7'
+                            : '#F8F4EF',
                           color: isCorrectAnswer
                             ? '#16a34a'
                             : isWrongSelected
                             ? '#ef4444'
                             : isSelected
-                            ? '#44403c'
-                            : '#a8a29e',
+                            ? '#4C4038'
+                            : '#A08F84',
                         }}
                       >
                         {String.fromCharCode(65 + i)}
                       </div>
-                      <span style={{ fontSize: 14, color: '#57534e', flex: 1 }}>{opt}</span>
+                      <span style={{ fontSize: 14, color: '#7A6A60', flex: 1 }}>{opt}</span>
                       {isCorrectAnswer && (
                         <CheckCircleOutlined style={{ color: '#22c55e', fontSize: 16 }} />
                       )}
@@ -341,7 +341,7 @@ export default function LessonPage() {
                       type="link"
                       icon={<BulbOutlined />}
                       onClick={() => setShowHint(true)}
-                      style={{ padding: 0, color: '#a8a29e' }}
+                      style={{ padding: 0, color: '#A08F84' }}
                     >
                       {t('lessonShowHint')}
                     </Button>
@@ -364,7 +364,7 @@ export default function LessonPage() {
                             {quizzes[currentQuiz].ai_hint}
                           </Text>
                         }
-                        style={{ borderRadius: 8, background: '#fafaf9', borderColor: '#f5f5f4' }}
+                        style={{ borderRadius: 8, background: '#F8F4EF', borderColor: '#F1E7DC' }}
                       />
                     </motion.div>
                   )}
@@ -442,7 +442,7 @@ export default function LessonPage() {
                         height: 64,
                         margin: '0 auto',
                         borderRadius: 12,
-                        background: '#292524',
+                        background: '#B88A72',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -458,15 +458,15 @@ export default function LessonPage() {
                   <Space direction="vertical" size="large" style={{ width: '100%' }}>
                     <Space size={48} style={{ justifyContent: 'center', width: '100%' }}>
                       <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: 28, fontWeight: 600, color: '#1c1917', display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}>
-                          <ThunderboltOutlined style={{ fontSize: 20, color: '#a8a29e' }} />
+                        <div style={{ fontSize: 28, fontWeight: 600, color: '#4C4038', display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}>
+                          <ThunderboltOutlined style={{ fontSize: 20, color: '#A08F84' }} />
                           {totalXpEarned}
                         </div>
                         <Text type="secondary" style={{ fontSize: 12 }}>{t('lessonXPEarned')}</Text>
                       </div>
                       {quizzes.length > 0 && (
                         <div style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: 28, fontWeight: 600, color: '#1c1917' }}>
+                          <div style={{ fontSize: 28, fontWeight: 600, color: '#4C4038' }}>
                             {correctCount}/{quizzes.length}
                           </div>
                           <Text type="secondary" style={{ fontSize: 12 }}>{t('lessonQuizScore')}</Text>

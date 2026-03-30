@@ -65,13 +65,13 @@ export default function CoursesPage() {
                   bordered={false}
                   style={{
                     borderRadius: 16,
-                    border: '1px solid #f5f5f4',
+                    border: '1px solid #F1E7DC',
                     overflow: 'hidden',
                   }}
                   styles={{ body: { padding: 0 } }}
                 >
                   {/* Top accent line */}
-                  <div style={{ height: 2, background: '#e7e5e4' }} />
+                  <div style={{ height: 2, background: '#E2D4C7' }} />
 
                   <div style={{ padding: 28 }}>
                     {/* Header */}
@@ -82,19 +82,19 @@ export default function CoursesPage() {
                             width: 40,
                             height: 40,
                             borderRadius: 8,
-                            background: '#fafaf9',
+                            background: '#F8F4EF',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                           }}
                         >
-                          <ReadOutlined style={{ fontSize: 16, color: '#a8a29e' }} />
+                          <ReadOutlined style={{ fontSize: 16, color: '#A08F84' }} />
                         </div>
                         <div>
-                          <Text strong style={{ fontSize: 16, color: '#292524', display: 'block' }}>
+                          <Text strong style={{ fontSize: 16, color: '#4C4038', display: 'block' }}>
                             {course.title}
                           </Text>
-                          <Text style={{ fontSize: 12, color: '#a8a29e' }}>
+                          <Text style={{ fontSize: 12, color: '#A08F84' }}>
                             {total} {t('coursesLessons')}
                           </Text>
                         </div>
@@ -114,7 +114,7 @@ export default function CoursesPage() {
                     <Text
                       style={{
                         fontSize: 14,
-                        color: '#a8a29e',
+                        color: '#A08F84',
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
@@ -128,15 +128,15 @@ export default function CoursesPage() {
                     {/* Progress bar */}
                     <div style={{ marginBottom: 24 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                        <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('coursesProgress')}</Text>
-                        <Text style={{ fontSize: 12, color: '#a8a29e' }}>
+                        <Text style={{ fontSize: 12, color: '#A08F84' }}>{t('coursesProgress')}</Text>
+                        <Text style={{ fontSize: 12, color: '#A08F84' }}>
                           {done}/{total} {t('coursesLessons')}
                         </Text>
                       </div>
                       <Progress
                         percent={pct}
-                        strokeColor="#292524"
-                        trailColor="#f5f5f4"
+                        strokeColor="#B88A72"
+                        trailColor="#F1E7DC"
                         showInfo={false}
                         size={['100%', 6]}
                       />
@@ -157,15 +157,15 @@ export default function CoursesPage() {
                               justifyContent: 'space-between',
                               padding: '10px 12px',
                               borderRadius: 8,
-                              background: '#fafaf9',
+                              background: '#F8F4EF',
                               transition: 'all 0.2s',
                               cursor: 'pointer',
                             }}
                             onMouseEnter={(e) => {
-                              (e.currentTarget as HTMLDivElement).style.background = '#f5f5f4';
+                              (e.currentTarget as HTMLDivElement).style.background = '#F1E7DC';
                             }}
                             onMouseLeave={(e) => {
-                              (e.currentTarget as HTMLDivElement).style.background = '#fafaf9';
+                              (e.currentTarget as HTMLDivElement).style.background = '#F8F4EF';
                             }}
                           >
                             <Space size={12}>
@@ -178,8 +178,8 @@ export default function CoursesPage() {
                                   alignItems: 'center',
                                   justifyContent: 'center',
                                   fontSize: 12,
-                                  background: lesson.completed ? '#f0fdf4' : '#f5f5f4',
-                                  color: lesson.completed ? '#22c55e' : '#a8a29e',
+                                  background: lesson.completed ? '#f0fdf4' : '#F1E7DC',
+                                  color: lesson.completed ? '#22c55e' : '#A08F84',
                                 }}
                               >
                                 {lesson.completed ? (
@@ -189,26 +189,26 @@ export default function CoursesPage() {
                                 )}
                               </div>
                               <div>
-                                <Text style={{ fontSize: 14, color: '#57534e', display: 'block' }}>
+                                <Text style={{ fontSize: 14, color: '#4C4038', display: 'block' }}>
                                   {lesson.title}
                                 </Text>
                                 <Space size={8} style={{ marginTop: 2 }}>
                                   <Space size={4}>
-                                    <ClockCircleOutlined style={{ fontSize: 10, color: '#a8a29e' }} />
-                                    <Text style={{ fontSize: 11, color: '#a8a29e' }}>
+                                    <ClockCircleOutlined style={{ fontSize: 10, color: '#A08F84' }} />
+                                    <Text style={{ fontSize: 11, color: '#A08F84' }}>
                                       {lesson.estimated_minutes} {t('coursesMin')}
                                     </Text>
                                   </Space>
                                   <Space size={4}>
-                                    <StarOutlined style={{ fontSize: 10, color: '#a8a29e' }} />
-                                    <Text style={{ fontSize: 11, color: '#a8a29e' }}>
+                                    <StarOutlined style={{ fontSize: 10, color: '#A08F84' }} />
+                                    <Text style={{ fontSize: 11, color: '#A08F84' }}>
                                       {lesson.xp_reward} XP
                                     </Text>
                                   </Space>
                                 </Space>
                               </div>
                             </Space>
-                            <RightOutlined style={{ fontSize: 12, color: '#d6d3d1' }} />
+                            <RightOutlined style={{ fontSize: 12, color: '#E2D4C7' }} />
                           </div>
                         </Link>
                       ))}

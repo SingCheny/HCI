@@ -70,7 +70,7 @@ export default function AchievementsPage() {
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
         <Space align="center" size={8}>
-          <TrophyOutlined style={{ fontSize: 20, color: '#a8a29e' }} />
+          <TrophyOutlined style={{ fontSize: 20, color: '#A08F84' }} />
           <Title level={3} style={{ margin: 0 }}>{t('achievementsTitle')}</Title>
         </Space>
         <Text type="secondary" style={{ display: 'block', marginTop: 8, fontSize: 14 }}>
@@ -78,8 +78,8 @@ export default function AchievementsPage() {
         </Text>
         <Progress
           percent={Math.round(progressPercent)}
-          strokeColor="#292524"
-          trailColor="#f5f5f4"
+          strokeColor="#B88A72"
+          trailColor="#F1E7DC"
           style={{ maxWidth: 384, marginTop: 12 }}
           format={(p) => `${p}%`}
         />
@@ -89,8 +89,8 @@ export default function AchievementsPage() {
       {earned.length > 0 && (
         <section>
           <Space align="center" size={8} style={{ marginBottom: 20 }}>
-            <StarOutlined style={{ fontSize: 14, color: '#a8a29e' }} />
-            <Text strong style={{ fontSize: 12, color: '#57534e', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <StarOutlined style={{ fontSize: 14, color: '#A08F84' }} />
+            <Text strong style={{ fontSize: 12, color: '#7A6A60', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               {t('achievementsEarned')}
             </Text>
           </Space>
@@ -114,7 +114,7 @@ export default function AchievementsPage() {
                           size={44}
                           icon={<IconComponent />}
                           style={{
-                            backgroundColor: '#292524',
+                            backgroundColor: '#B88A72',
                             color: '#fff',
                             borderRadius: 8,
                             flexShrink: 0,
@@ -158,8 +158,8 @@ export default function AchievementsPage() {
       {locked.length > 0 && (
         <section>
           <Space align="center" size={8} style={{ marginBottom: 20 }}>
-            <LockOutlined style={{ fontSize: 14, color: '#a8a29e' }} />
-            <Text style={{ fontSize: 12, color: '#a8a29e', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <LockOutlined style={{ fontSize: 14, color: '#A08F84' }} />
+            <Text style={{ fontSize: 12, color: '#A08F84', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               {t('achievementsLocked')}
             </Text>
           </Space>
@@ -181,15 +181,15 @@ export default function AchievementsPage() {
                           size={44}
                           icon={<LockOutlined />}
                           style={{
-                            backgroundColor: '#f5f5f4',
-                            color: '#a8a29e',
+                            backgroundColor: '#F1E7DC',
+                            color: '#A08F84',
                             borderRadius: 8,
                             flexShrink: 0,
                           }}
                           shape="square"
                         />
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <Text style={{ fontSize: 14, display: 'block', color: '#78716c' }} ellipsis>
+                          <Text style={{ fontSize: 14, display: 'block', color: '#7A6A60' }} ellipsis>
                             {a.name}
                           </Text>
                           <Text type="secondary" style={{ fontSize: 12, display: 'block', marginTop: 2 }}>

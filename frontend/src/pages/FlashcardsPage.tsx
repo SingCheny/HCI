@@ -114,7 +114,7 @@ export default function FlashcardsPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <Title level={3} style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <AppstoreOutlined style={{ color: '#999' }} /> {t('flashcardsTitle')}
+            <AppstoreOutlined style={{ color: '#A08F84' }} /> {t('flashcardsTitle')}
           </Title>
           <Text type="secondary" style={{ marginTop: 8, display: 'block', fontSize: 13 }}>
             {t('flashcardsSubtitle')}
@@ -191,7 +191,7 @@ export default function FlashcardsPage() {
       {/* ---- Auto-generate ---- */}
       <Card>
         <Space align="center" style={{ marginBottom: 16 }}>
-          <StarOutlined style={{ color: '#999' }} />
+          <StarOutlined style={{ color: '#A08F84' }} />
           <Text strong>{t('flashcardsAutoGenerate')}</Text>
           {generating && <Spin size="small" />}
         </Space>
@@ -275,14 +275,14 @@ export default function FlashcardsPage() {
                   inset: 0,
                   backfaceVisibility: 'hidden',
                   borderRadius: 12,
-                  border: '1px solid #f0f0f0',
-                  background: '#fff',
+                  border: '1px solid #E2D4C7',
+                  background: '#FFFDF9',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
                   padding: 40,
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                  boxShadow: '0 1px 4px rgba(76,64,56,0.06)',
                 }}
               >
                 <Text
@@ -315,14 +315,14 @@ export default function FlashcardsPage() {
                   backfaceVisibility: 'hidden',
                   transform: 'rotateY(180deg)',
                   borderRadius: 12,
-                  border: '1px solid #f0f0f0',
-                  background: '#fafafa',
+                  border: '1px solid #E2D4C7',
+                  background: '#F8F4EF',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
                   padding: 40,
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                  boxShadow: '0 1px 4px rgba(76,64,56,0.06)',
                 }}
               >
                 <Text

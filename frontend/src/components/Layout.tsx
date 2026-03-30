@@ -63,8 +63,8 @@ export default function Layout({ children }: { children: ReactNode }) {
     <ProLayout
       title={t('appName')}
       logo={
-        <div style={{ width: 28, height: 28, borderRadius: 8, background: '#292524', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Sparkles size={14} color="#fff" />
+        <div style={{ width: 28, height: 28, borderRadius: 8, background: '#B88A72', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Sparkles size={14} color="#FFFDF9" />
         </div>
       }
       route={route}
@@ -81,15 +81,15 @@ export default function Layout({ children }: { children: ReactNode }) {
       )}
       token={{
         sider: {
-          colorMenuBackground: '#ffffff',
-          colorMenuItemDivider: 'rgba(0,0,0,0.04)',
-          colorTextMenu: '#78716c',
-          colorTextMenuSelected: '#ffffff',
-          colorBgMenuItemSelected: '#292524',
-          colorTextMenuActive: '#292524',
+          colorMenuBackground: '#FFFDF9',
+          colorMenuItemDivider: '#F1E7DC',
+          colorTextMenu: '#7A6A60',
+          colorTextMenuSelected: '#FFFDF9',
+          colorBgMenuItemSelected: '#B88A72',
+          colorTextMenuActive: '#B88A72',
         },
         header: {
-          colorBgHeader: '#ffffff',
+          colorBgHeader: '#FFFDF9',
           heightLayoutHeader: 56,
         },
         pageContainer: {
@@ -102,7 +102,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <Space key="actions" size="middle" align="center">
           {user && (
             <Space size={4} align="center">
-              <ThunderboltOutlined style={{ fontSize: 12, color: '#a8a29e' }} />
+              <ThunderboltOutlined style={{ fontSize: 12, color: '#A08F84' }} />
               <Text type="secondary" style={{ fontSize: 12 }}>{user.total_xp} XP</Text>
               {user.streak_days > 0 && (
                 <Tag color="default" style={{ marginLeft: 4, fontSize: 11 }}>
@@ -133,7 +133,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         </Space>,
       ]}
       avatarProps={{
-        style: { backgroundColor: '#292524' },
+        style: { backgroundColor: '#B88A72' },
         children: user?.display_name?.[0]?.toUpperCase() || 'U',
         title: user?.display_name || '',
         render: (_props, dom) => (
@@ -150,7 +150,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                         percent={levelProgress}
                         size="small"
                         showInfo={false}
-                        strokeColor="#292524"
+                        strokeColor="#B88A72"
                         style={{ marginTop: 6 }}
                       />
                     </div>
@@ -176,7 +176,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       menuFooterRender={(props) => {
         if (props?.collapsed) return null;
         return (
-          <div style={{ padding: '16px 16px 24px', borderTop: '1px solid rgba(0,0,0,0.04)' }}>
+          <div style={{ padding: '16px 16px 24px', borderTop: '1px solid #F1E7DC' }}>
             <Text type="secondary" style={{ fontSize: 11 }}>{t('appSubtitle')}</Text>
           </div>
         );

@@ -2,25 +2,25 @@ import type { ThemeConfig } from 'antd';
 
 const themeConfig: ThemeConfig = {
   token: {
-    colorPrimary: '#292524',
-    colorPrimaryHover: '#44403c',
-    colorPrimaryActive: '#1c1917',
+    colorPrimary: '#B88A72',
+    colorPrimaryHover: '#A67862',
+    colorPrimaryActive: '#9A6D58',
 
     colorSuccess: '#22c55e',
     colorWarning: '#f59e0b',
     colorError: '#ef4444',
 
-    colorText: '#1c1917',
-    colorTextSecondary: '#57534e',
-    colorTextTertiary: '#78716c',
-    colorTextQuaternary: '#a8a29e',
+    colorText: '#4C4038',
+    colorTextSecondary: '#7A6A60',
+    colorTextTertiary: '#A08F84',
+    colorTextQuaternary: '#A08F84',
 
-    colorBgContainer: '#ffffff',
-    colorBgLayout: '#fafafa',
-    colorBgElevated: '#ffffff',
+    colorBgContainer: '#FFFDF9',
+    colorBgLayout: '#F8F4EF',
+    colorBgElevated: '#FFFDF9',
 
-    colorBorder: 'rgba(0, 0, 0, 0.08)',
-    colorBorderSecondary: 'rgba(0, 0, 0, 0.05)',
+    colorBorder: '#E2D4C7',
+    colorBorderSecondary: '#F1E7DC',
 
     borderRadius: 8,
     borderRadiusLG: 12,
@@ -33,43 +33,44 @@ const themeConfig: ThemeConfig = {
     controlHeightLG: 48,
     controlHeightSM: 32,
 
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
-    boxShadowSecondary: '0 4px 16px rgba(0, 0, 0, 0.04)',
+    boxShadow: '0 1px 3px rgba(76, 64, 56, 0.06)',
+    boxShadowSecondary: '0 4px 16px rgba(76, 64, 56, 0.06)',
   },
   components: {
     Button: {
-      primaryColor: '#ffffff',
-      colorPrimary: '#292524',
+      primaryColor: '#FFFDF9',
+      colorPrimary: '#B88A72',
       algorithm: true,
     },
     Menu: {
       itemBg: 'transparent',
-      itemSelectedBg: '#292524',
-      itemSelectedColor: '#ffffff',
-      itemColor: '#78716c',
-      itemHoverColor: '#292524',
-      itemHoverBg: '#fafaf9',
+      itemSelectedBg: '#B88A72',
+      itemSelectedColor: '#FFFDF9',
+      itemColor: '#7A6A60',
+      itemHoverColor: '#4C4038',
+      itemHoverBg: '#F1E7DC',
       activeBarBorderWidth: 0,
     },
     Card: {
       borderRadiusLG: 12,
       paddingLG: 24,
+      colorBgContainer: '#FFFDF9',
     },
     Layout: {
-      siderBg: '#ffffff',
-      headerBg: '#ffffff',
-      bodyBg: '#fafafa',
+      siderBg: '#FFFDF9',
+      headerBg: '#FFFDF9',
+      bodyBg: '#F8F4EF',
     },
     Progress: {
-      defaultColor: '#292524',
+      defaultColor: '#B88A72',
     },
     Input: {
-      colorBgContainer: '#fafaf9',
-      activeBorderColor: '#d6d3d1',
-      hoverBorderColor: '#d6d3d1',
+      colorBgContainer: '#F8F4EF',
+      activeBorderColor: '#B88A72',
+      hoverBorderColor: '#E2D4C7',
     },
     Select: {
-      colorBgContainer: '#fafaf9',
+      colorBgContainer: '#F8F4EF',
     },
   },
 };

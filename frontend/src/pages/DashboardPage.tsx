@@ -53,10 +53,10 @@ export default function DashboardPage() {
   const xpPercent = stats ? Math.min((stats.xp_progress / Math.max(stats.xp_needed, 1)) * 100, 100) : 0;
 
   const statCards = [
-    { icon: <ThunderboltOutlined style={{ fontSize: 16, color: '#a8a29e' }} />, label: t('dashTotalXP'), value: stats?.total_xp || 0 },
-    { icon: <FireOutlined style={{ fontSize: 16, color: '#a8a29e' }} />, label: t('dashDayStreak'), value: `${stats?.streak_days || 0} ${t('dashDays')}` },
-    { icon: <ReadOutlined style={{ fontSize: 16, color: '#a8a29e' }} />, label: t('dashLessonsDone'), value: `${stats?.lessons_completed || 0}/${stats?.total_lessons || 0}` },
-    { icon: <AimOutlined style={{ fontSize: 16, color: '#a8a29e' }} />, label: t('dashQuizAccuracy'), value: `${stats?.accuracy || 0}%` },
+    { icon: <ThunderboltOutlined style={{ fontSize: 16, color: '#A08F84' }} />, label: t('dashTotalXP'), value: stats?.total_xp || 0 },
+    { icon: <FireOutlined style={{ fontSize: 16, color: '#A08F84' }} />, label: t('dashDayStreak'), value: `${stats?.streak_days || 0} ${t('dashDays')}` },
+    { icon: <ReadOutlined style={{ fontSize: 16, color: '#A08F84' }} />, label: t('dashLessonsDone'), value: `${stats?.lessons_completed || 0}/${stats?.total_lessons || 0}` },
+    { icon: <AimOutlined style={{ fontSize: 16, color: '#A08F84' }} />, label: t('dashQuizAccuracy'), value: `${stats?.accuracy || 0}%` },
   ];
 
   return (
@@ -78,7 +78,7 @@ export default function DashboardPage() {
           <Link to="/courses">
             <Button
               type="primary"
-              style={{ background: '#1c1917', borderColor: '#1c1917', borderRadius: 8, height: 40, fontWeight: 500 }}
+              style={{ background: '#B88A72', borderColor: '#B88A72', borderRadius: 8, height: 40, fontWeight: 500 }}
             >
               {t('dashContinueLearning')} <RightOutlined style={{ fontSize: 12 }} />
             </Button>
@@ -102,12 +102,12 @@ export default function DashboardPage() {
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                   {stat.icon}
-                  <RiseOutlined style={{ fontSize: 14, color: '#d6d3d1' }} />
+                  <RiseOutlined style={{ fontSize: 14, color: '#E2D4C7' }} />
                 </div>
-                <Text style={{ fontSize: 30, fontWeight: 600, color: '#1c1917', letterSpacing: '-0.025em', display: 'block' }}>
+                <Text style={{ fontSize: 30, fontWeight: 600, color: '#4C4038', letterSpacing: '-0.025em', display: 'block' }}>
                   {stat.value}
                 </Text>
-                <Text style={{ fontSize: 12, color: '#a8a29e', marginTop: 8, display: 'block' }}>{stat.label}</Text>
+                <Text style={{ fontSize: 12, color: '#A08F84', marginTop: 8, display: 'block' }}>{stat.label}</Text>
               </Card>
             </motion.div>
           </Col>
@@ -126,8 +126,8 @@ export default function DashboardPage() {
             <Card style={{ borderRadius: 16 }} styles={{ body: { padding: 32 } }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
                 <Space size={8}>
-                  <StarOutlined style={{ fontSize: 16, color: '#a8a29e' }} />
-                  <Text strong style={{ fontSize: 14, color: '#44403c' }}>{t('dashLevelProgress')}</Text>
+                  <StarOutlined style={{ fontSize: 16, color: '#A08F84' }} />
+                  <Text strong style={{ fontSize: 14, color: '#4C4038' }}>{t('dashLevelProgress')}</Text>
                 </Space>
                 <Tag color="default" style={{ borderRadius: 6, fontSize: 12, fontWeight: 500 }}>
                   {t('dashLevel')} {stats?.level || 1}
@@ -136,22 +136,22 @@ export default function DashboardPage() {
 
               <Progress
                 percent={Math.round(xpPercent)}
-                strokeColor="#292524"
-                trailColor="#f5f5f4"
+                strokeColor="#B88A72"
+                trailColor="#F1E7DC"
                 showInfo={false}
                 size={['100%', 8]}
                 style={{ marginBottom: 12 }}
               />
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Text style={{ fontSize: 11, color: '#a8a29e' }}>{stats?.xp_progress || 0} XP</Text>
-                <Text style={{ fontSize: 11, color: '#a8a29e' }}>
+                <Text style={{ fontSize: 11, color: '#A08F84' }}>{stats?.xp_progress || 0} XP</Text>
+                <Text style={{ fontSize: 11, color: '#A08F84' }}>
                   {stats?.xp_needed || 100} XP {t('dashXPNeeded')} {(stats?.level || 1) + 1}
                 </Text>
               </div>
 
               {/* Course Progress */}
               <div style={{ marginTop: 32 }}>
-                <Text style={{ fontSize: 12, fontWeight: 500, color: '#78716c', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <Text style={{ fontSize: 12, fontWeight: 500, color: '#7A6A60', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   {t('dashCourseProgress')}
                 </Text>
                 <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -166,24 +166,24 @@ export default function DashboardPage() {
                             width: 36,
                             height: 36,
                             borderRadius: 8,
-                            background: '#fafaf9',
+                            background: '#F8F4EF',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             flexShrink: 0,
                           }}
                         >
-                          <ReadOutlined style={{ fontSize: 14, color: '#a8a29e' }} />
+                          <ReadOutlined style={{ fontSize: 14, color: '#A08F84' }} />
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, gap: 8 }}>
-                            <Text ellipsis style={{ fontSize: 14, color: '#57534e' }}>{course.title}</Text>
-                            <Text style={{ fontSize: 11, color: '#a8a29e', flexShrink: 0 }}>{done}/{total}</Text>
+                            <Text ellipsis style={{ fontSize: 14, color: '#4C4038' }}>{course.title}</Text>
+                            <Text style={{ fontSize: 11, color: '#A08F84', flexShrink: 0 }}>{done}/{total}</Text>
                           </div>
                           <Progress
                             percent={pct}
-                            strokeColor="#292524"
-                            trailColor="#f5f5f4"
+                            strokeColor="#B88A72"
+                            trailColor="#F1E7DC"
                             showInfo={false}
                             size={['100%', 4]}
                           />
@@ -210,15 +210,15 @@ export default function DashboardPage() {
               styles={{ body: { padding: 32, display: 'flex', flexDirection: 'column', height: '100%' } }}
             >
               <Space size={8} style={{ marginBottom: 20 }}>
-                <TrophyOutlined style={{ fontSize: 16, color: '#a8a29e' }} />
-                <Text strong style={{ fontSize: 14, color: '#44403c' }}>{t('dashQuickStats')}</Text>
+                <TrophyOutlined style={{ fontSize: 16, color: '#A08F84' }} />
+                <Text strong style={{ fontSize: 14, color: '#4C4038' }}>{t('dashQuickStats')}</Text>
               </Space>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
                 {[
-                  { icon: <CheckCircleOutlined style={{ fontSize: 14, color: '#a8a29e' }} />, label: t('dashQuizzesCorrect'), value: stats?.quizzes_correct || 0 },
-                  { icon: <ClockCircleOutlined style={{ fontSize: 14, color: '#a8a29e' }} />, label: t('dashQuizzesAttempted'), value: stats?.quizzes_attempted || 0 },
-                  { icon: <TrophyOutlined style={{ fontSize: 14, color: '#a8a29e' }} />, label: t('dashAchievements'), value: `${stats?.achievements_earned || 0}/${stats?.total_achievements || 0}` },
+                  { icon: <CheckCircleOutlined style={{ fontSize: 14, color: '#A08F84' }} />, label: t('dashQuizzesCorrect'), value: stats?.quizzes_correct || 0 },
+                  { icon: <ClockCircleOutlined style={{ fontSize: 14, color: '#A08F84' }} />, label: t('dashQuizzesAttempted'), value: stats?.quizzes_attempted || 0 },
+                  { icon: <TrophyOutlined style={{ fontSize: 14, color: '#A08F84' }} />, label: t('dashAchievements'), value: `${stats?.achievements_earned || 0}/${stats?.total_achievements || 0}` },
                 ].map((item, i) => (
                   <div
                     key={i}
@@ -228,14 +228,14 @@ export default function DashboardPage() {
                       justifyContent: 'space-between',
                       padding: '12px 14px',
                       borderRadius: 8,
-                      background: '#fafaf9',
+                      background: '#F8F4EF',
                     }}
                   >
                     <Space size={10}>
                       {item.icon}
-                      <Text style={{ fontSize: 14, color: '#78716c' }}>{item.label}</Text>
+                      <Text style={{ fontSize: 14, color: '#7A6A60' }}>{item.label}</Text>
                     </Space>
-                    <Text strong style={{ fontSize: 14, color: '#292524' }}>{item.value}</Text>
+                    <Text strong style={{ fontSize: 14, color: '#4C4038' }}>{item.value}</Text>
                   </div>
                 ))}
               </div>
@@ -244,7 +244,7 @@ export default function DashboardPage() {
                 <Button
                   block
                   icon={<TrophyOutlined />}
-                  style={{ borderRadius: 8, background: '#fafaf9', borderColor: '#e7e5e4', color: '#78716c', height: 40 }}
+                  style={{ borderRadius: 8, background: '#F8F4EF', borderColor: '#E2D4C7', color: '#7A6A60', height: 40 }}
                 >
                   {t('dashViewAllAchievements')}
                 </Button>
@@ -256,18 +256,18 @@ export default function DashboardPage() {
                   marginTop: 16,
                   padding: 14,
                   borderRadius: 8,
-                  background: '#fafaf9',
-                  border: '1px solid #f5f5f4',
+                  background: '#F8F4EF',
+                  border: '1px solid #F1E7DC',
                 }}
               >
                 <Space size={8}>
-                  <BarChartOutlined style={{ fontSize: 14, color: '#a8a29e' }} />
-                  <Text style={{ fontSize: 12, color: '#78716c' }}>
-                    {t('dashAIMode')}: <Text strong style={{ fontSize: 12, color: '#44403c' }}>{stats?.ai_mode_enabled ? 'ON' : 'OFF'}</Text>
+                  <BarChartOutlined style={{ fontSize: 14, color: '#A08F84' }} />
+                  <Text style={{ fontSize: 12, color: '#7A6A60' }}>
+                    {t('dashAIMode')}: <Text strong style={{ fontSize: 12, color: '#4C4038' }}>{stats?.ai_mode_enabled ? 'ON' : 'OFF'}</Text>
                   </Text>
                 </Space>
                 <div style={{ marginTop: 6 }}>
-                  <Link to="/comparison" style={{ fontSize: 12, color: '#a8a29e' }}>
+                  <Link to="/comparison" style={{ fontSize: 12, color: '#A08F84' }}>
                     {t('dashViewComparison')}
                   </Link>
                 </div>
@@ -289,30 +289,30 @@ export default function DashboardPage() {
                 styles={{ body: { padding: 24 } }}
               >
                 <Space size={10} style={{ marginBottom: 20 }}>
-                  <AppstoreOutlined style={{ fontSize: 16, color: '#a8a29e' }} />
-                  <Text strong style={{ fontSize: 14, color: '#44403c' }}>{t('dashFlashcards')}</Text>
+                  <AppstoreOutlined style={{ fontSize: 16, color: '#A08F84' }} />
+                  <Text strong style={{ fontSize: 14, color: '#4C4038' }}>{t('dashFlashcards')}</Text>
                 </Space>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashFlashTotal')}</Text>
-                    <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.flashcards.total}</Text>
+                    <Text style={{ fontSize: 12, color: '#A08F84' }}>{t('dashFlashTotal')}</Text>
+                    <Text strong style={{ fontSize: 14, color: '#4C4038' }}>{widgets.flashcards.total}</Text>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashFlashDue')}</Text>
-                    <Text strong style={{ fontSize: 14, color: widgets.flashcards.due > 0 ? '#292524' : '#a8a29e' }}>
+                    <Text style={{ fontSize: 12, color: '#A08F84' }}>{t('dashFlashDue')}</Text>
+                    <Text strong style={{ fontSize: 14, color: widgets.flashcards.due > 0 ? '#4C4038' : '#A08F84' }}>
                       {widgets.flashcards.due}
                     </Text>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashFlashMastered')}</Text>
-                    <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.flashcards.mastered}</Text>
+                    <Text style={{ fontSize: 12, color: '#A08F84' }}>{t('dashFlashMastered')}</Text>
+                    <Text strong style={{ fontSize: 14, color: '#4C4038' }}>{widgets.flashcards.mastered}</Text>
                   </div>
                   {widgets.flashcards.total > 0 && (
                     <Progress
                       percent={Math.round(widgets.flashcards.mastered / Math.max(widgets.flashcards.total, 1) * 100)}
-                      strokeColor="#292524"
-                      trailColor="#f5f5f4"
+                      strokeColor="#B88A72"
+                      trailColor="#F1E7DC"
                       showInfo={false}
                       size={['100%', 4]}
                     />
@@ -324,7 +324,7 @@ export default function DashboardPage() {
                     block
                     icon={<AppstoreOutlined />}
                     size="small"
-                    style={{ borderRadius: 8, background: '#fafaf9', borderColor: '#e7e5e4', color: '#78716c', height: 36, fontSize: 12 }}
+                    style={{ borderRadius: 8, background: '#F8F4EF', borderColor: '#E2D4C7', color: '#7A6A60', height: 36, fontSize: 12 }}
                   >
                     {t('dashFlashGo')}
                   </Button>
@@ -342,30 +342,30 @@ export default function DashboardPage() {
                 styles={{ body: { padding: 24 } }}
               >
                 <Space size={10} style={{ marginBottom: 20 }}>
-                  <ExclamationCircleOutlined style={{ fontSize: 16, color: '#a8a29e' }} />
-                  <Text strong style={{ fontSize: 14, color: '#44403c' }}>{t('dashWrong')}</Text>
+                  <ExclamationCircleOutlined style={{ fontSize: 16, color: '#A08F84' }} />
+                  <Text strong style={{ fontSize: 14, color: '#4C4038' }}>{t('dashWrong')}</Text>
                 </Space>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashWrongTotal')}</Text>
-                    <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.wrong_answers.total_wrong}</Text>
+                    <Text style={{ fontSize: 12, color: '#A08F84' }}>{t('dashWrongTotal')}</Text>
+                    <Text strong style={{ fontSize: 14, color: '#4C4038' }}>{widgets.wrong_answers.total_wrong}</Text>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashWrongCorrected')}</Text>
-                    <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.wrong_answers.corrected}</Text>
+                    <Text style={{ fontSize: 12, color: '#A08F84' }}>{t('dashWrongCorrected')}</Text>
+                    <Text strong style={{ fontSize: 14, color: '#4C4038' }}>{widgets.wrong_answers.corrected}</Text>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashWrongRemaining')}</Text>
-                    <Text strong style={{ fontSize: 14, color: widgets.wrong_answers.uncorrected > 0 ? '#292524' : '#a8a29e' }}>
+                    <Text style={{ fontSize: 12, color: '#A08F84' }}>{t('dashWrongRemaining')}</Text>
+                    <Text strong style={{ fontSize: 14, color: widgets.wrong_answers.uncorrected > 0 ? '#4C4038' : '#A08F84' }}>
                       {widgets.wrong_answers.uncorrected}
                     </Text>
                   </div>
                   {widgets.wrong_answers.total_wrong > 0 && (
                     <Progress
                       percent={Math.round(widgets.wrong_answers.corrected / Math.max(widgets.wrong_answers.total_wrong, 1) * 100)}
-                      strokeColor="#292524"
-                      trailColor="#f5f5f4"
+                      strokeColor="#B88A72"
+                      trailColor="#F1E7DC"
                       showInfo={false}
                       size={['100%', 4]}
                     />
@@ -377,7 +377,7 @@ export default function DashboardPage() {
                     block
                     icon={<ExclamationCircleOutlined />}
                     size="small"
-                    style={{ borderRadius: 8, background: '#fafaf9', borderColor: '#e7e5e4', color: '#78716c', height: 36, fontSize: 12 }}
+                    style={{ borderRadius: 8, background: '#F8F4EF', borderColor: '#E2D4C7', color: '#7A6A60', height: 36, fontSize: 12 }}
                   >
                     {t('dashWrongGo')}
                   </Button>
@@ -395,33 +395,33 @@ export default function DashboardPage() {
                 styles={{ body: { padding: 24 } }}
               >
                 <Space size={10} style={{ marginBottom: 20 }}>
-                  <CalendarOutlined style={{ fontSize: 16, color: '#a8a29e' }} />
-                  <Text strong style={{ fontSize: 14, color: '#44403c' }}>{t('dashPlan')}</Text>
+                  <CalendarOutlined style={{ fontSize: 16, color: '#A08F84' }} />
+                  <Text strong style={{ fontSize: 14, color: '#4C4038' }}>{t('dashPlan')}</Text>
                 </Space>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashPlanCompleted')}</Text>
-                    <Text strong style={{ fontSize: 14, color: '#292524' }}>
+                    <Text style={{ fontSize: 12, color: '#A08F84' }}>{t('dashPlanCompleted')}</Text>
+                    <Text strong style={{ fontSize: 14, color: '#4C4038' }}>
                       {widgets.study_plans.completed_plans}/{widgets.study_plans.total_plans}
                     </Text>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashPlanTasks')}</Text>
-                    <Text strong style={{ fontSize: 14, color: '#292524' }}>
+                    <Text style={{ fontSize: 12, color: '#A08F84' }}>{t('dashPlanTasks')}</Text>
+                    <Text strong style={{ fontSize: 14, color: '#4C4038' }}>
                       {widgets.study_plans.done_items}/{widgets.study_plans.total_items}
                     </Text>
                   </div>
                   {widgets.study_plans.active_plans.map((p: any) => (
                     <div key={p.id}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                        <Text ellipsis style={{ fontSize: 12, color: '#a8a29e', marginRight: 8 }}>{p.title}</Text>
-                        <Text style={{ fontSize: 12, color: '#a8a29e', flexShrink: 0 }}>{p.done}/{p.total}</Text>
+                        <Text ellipsis style={{ fontSize: 12, color: '#A08F84', marginRight: 8 }}>{p.title}</Text>
+                        <Text style={{ fontSize: 12, color: '#A08F84', flexShrink: 0 }}>{p.done}/{p.total}</Text>
                       </div>
                       <Progress
                         percent={p.progress}
-                        strokeColor="#292524"
-                        trailColor="#f5f5f4"
+                        strokeColor="#B88A72"
+                        trailColor="#F1E7DC"
                         showInfo={false}
                         size={['100%', 4]}
                       />
@@ -434,7 +434,7 @@ export default function DashboardPage() {
                     block
                     icon={<CalendarOutlined />}
                     size="small"
-                    style={{ borderRadius: 8, background: '#fafaf9', borderColor: '#e7e5e4', color: '#78716c', height: 36, fontSize: 12 }}
+                    style={{ borderRadius: 8, background: '#F8F4EF', borderColor: '#E2D4C7', color: '#7A6A60', height: 36, fontSize: 12 }}
                   >
                     {t('dashPlanGo')}
                   </Button>
@@ -453,32 +453,32 @@ export default function DashboardPage() {
                   styles={{ body: { padding: 24 } }}
                 >
                   <Space size={10} style={{ marginBottom: 20 }}>
-                    <FieldTimeOutlined style={{ fontSize: 16, color: '#a8a29e' }} />
-                    <Text strong style={{ fontSize: 14, color: '#44403c' }}>{t('dashFocus')}</Text>
+                    <FieldTimeOutlined style={{ fontSize: 16, color: '#A08F84' }} />
+                    <Text strong style={{ fontSize: 14, color: '#4C4038' }}>{t('dashFocus')}</Text>
                   </Space>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashFocusToday')}</Text>
-                      <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.focus.today_minutes} min</Text>
+                      <Text style={{ fontSize: 12, color: '#A08F84' }}>{t('dashFocusToday')}</Text>
+                      <Text strong style={{ fontSize: 14, color: '#4C4038' }}>{widgets.focus.today_minutes} min</Text>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashFocusTotal')}</Text>
-                      <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.focus.total_minutes} min</Text>
+                      <Text style={{ fontSize: 12, color: '#A08F84' }}>{t('dashFocusTotal')}</Text>
+                      <Text strong style={{ fontSize: 14, color: '#4C4038' }}>{widgets.focus.total_minutes} min</Text>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashFocusSessions')}</Text>
-                      <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.focus.total_sessions}</Text>
+                      <Text style={{ fontSize: 12, color: '#A08F84' }}>{t('dashFocusSessions')}</Text>
+                      <Text strong style={{ fontSize: 14, color: '#4C4038' }}>{widgets.focus.total_sessions}</Text>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Text style={{ fontSize: 12, color: '#a8a29e' }}>{t('dashFocusAvg')}</Text>
-                      <Text strong style={{ fontSize: 14, color: '#292524' }}>{widgets.focus.avg_duration} min</Text>
+                      <Text style={{ fontSize: 12, color: '#A08F84' }}>{t('dashFocusAvg')}</Text>
+                      <Text strong style={{ fontSize: 14, color: '#4C4038' }}>{widgets.focus.avg_duration} min</Text>
                     </div>
 
                     {/* Weekly bar chart */}
                     {widgets.focus.weekly && (
                       <div style={{ paddingTop: 12 }}>
-                        <Text style={{ fontSize: 10, color: '#a8a29e', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        <Text style={{ fontSize: 10, color: '#A08F84', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                           {t('dashFocusWeek')}
                         </Text>
                         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 56, marginTop: 8 }}>
@@ -502,13 +502,13 @@ export default function DashboardPage() {
                                   style={{
                                     width: '100%',
                                     borderRadius: 2,
-                                    background: '#d6d3d1',
+                                    background: '#E2D4C7',
                                     height: barH,
                                     transition: 'all 0.3s',
                                   }}
                                   title={`${d.minutes} min`}
                                 />
-                                <span style={{ fontSize: 9, color: '#a8a29e' }}>{d.weekday}</span>
+                                <span style={{ fontSize: 9, color: '#A08F84' }}>{d.weekday}</span>
                               </div>
                             );
                           })}
@@ -522,7 +522,7 @@ export default function DashboardPage() {
                       block
                       icon={<FieldTimeOutlined />}
                       size="small"
-                      style={{ borderRadius: 8, background: '#fafaf9', borderColor: '#e7e5e4', color: '#78716c', height: 36, fontSize: 12 }}
+                      style={{ borderRadius: 8, background: '#F8F4EF', borderColor: '#E2D4C7', color: '#7A6A60', height: 36, fontSize: 12 }}
                     >
                       {t('dashFocusGo')}
                     </Button>
